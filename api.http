@@ -1,0 +1,255 @@
+### Variables
+@baseUrl = http://localhost:3000
+@email = process.env.EMAIL
+@password = process.env.PASSWORD
+### 1. Health Check
+GET {{baseUrl}}/health
+
+### 2. Root Route
+GET {{baseUrl}}/
+
+### 3. Login
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+    "email": "{{$dotenv EMAIL}}",
+    "password": "{{$dotenv PASSWORD}}"
+}
+
+### 4. Refresh Token
+POST {{baseUrl}}/api/auth/refresh
+
+### 5. Logout
+POST {{baseUrl}}/api/auth/logout
+
+
+### ==========================================
+### GENRES ROUTES
+### ==========================================
+
+### Get All Genres
+GET {{baseUrl}}/api/genres
+
+### Search Genre By Name
+GET {{baseUrl}}/api/genres/search?name=دراما
+
+### Get Single Genre By ID
+GET {{baseUrl}}/api/genres/1
+
+### Create New Genre
+POST {{baseUrl}}/api/genres
+Content-Type: application/json
+
+{
+  "name": "أكشن"
+}
+
+### Update Genre By ID
+PATCH {{baseUrl}}/api/genres/1
+Content-Type: application/json
+
+{
+  "name": "أكشن وإثارة"
+}
+
+### Delete Genre By ID
+DELETE {{baseUrl}}/api/genres/1
+
+
+### ==========================================
+### MEDIAS ROUTES
+### ==========================================
+
+### Get All Medias (Paginated)
+GET {{baseUrl}}/api/medias?page=1&limit=10
+
+### Get Single Media By ID
+GET {{baseUrl}}/api/medias/8371
+
+### Create New Media
+### Create New Media (genres expects Array of Genre IDs)
+POST {{baseUrl}}/api/medias
+Content-Type: application/json
+
+{
+    "tmdb_id": "123456",
+    "title": "عنوان تجريبي",
+    "story": "وصف الفيلم التجريبي هنا",
+    "poster_url": "https://res.cloudinary.com/demo/image/upload/sample.jpg",
+    "category": "movie",
+    "year": "2026",
+    "rating": "8.0",
+    "media_type": "movie",
+    "is_ready": true,
+    "genres": [39, 1]
+}
+
+### Update Media By ID
+PATCH {{baseUrl}}/api/medias/8374
+Content-Type: application/json
+
+{
+    "slug": "عنوان تجريبي",
+    "is_ready": false
+}
+
+### Delete Media By ID
+DELETE {{baseUrl}}/api/medias/8374
+
+### ==========================================
+### SEASONS ROUTES
+### ==========================================
+
+### Get Seasons By Media ID
+GET {{baseUrl}}/api/seasons/media/8371
+
+### Create Season For Media
+POST {{baseUrl}}/api/seasons/media/8371
+Content-Type: application/json
+
+{
+    "season_number": 5
+}
+
+### Get Single Season By ID
+GET {{baseUrl}}/api/seasons/233
+
+### Update Season By ID
+PATCH {{baseUrl}}/api/seasons/233
+Content-Type: application/json
+
+{
+  "title": "الموسم الأول - محدث"
+}
+
+### Delete Season By ID
+# DELETE {{baseUrl}}/api/seasons/1
+
+
+### ==========================================
+### EPISODES ROUTES
+### ==========================================
+
+### Get Episodes By Media ID
+GET {{baseUrl}}/api/episodes/media/8371
+# GET {{baseUrl}}/api/episodes/media/8371?page=1&limit=10
+### Get Episodes By Season ID
+GET {{baseUrl}}/api/episodes/season/1
+
+### Create Episode For Media
+POST {{baseUrl}}/api/episodes/media/8371
+Content-Type: application/json
+
+{
+  "episode_number": 1,
+  "title": "الحلقة الأولى",
+  "season_id": "1"
+}
+
+### Get Single Episode By ID
+GET {{baseUrl}}/api/episodes/300
+
+### Update Episode By ID
+PATCH {{baseUrl}}/api/episodes/1
+Content-Type: application/json
+
+{
+  "title": "الحلقة الأولى - محدث"
+}
+
+### Delete Episode By ID
+# DELETE {{baseUrl}}/api/episodes/1
+
+
+### ==========================================
+### LINKS ROUTES
+### ==========================================
+
+### Get Links By Episode ID
+GET {{baseUrl}}/api/links/episode/300
+
+### Create Link For Episode
+POST {{baseUrl}}/api/links/episode/1
+Content-Type: application/json
+
+{
+  "server_name": "MixDrop",
+  "url": "https://mixdrop.co/e/example",
+  "quality": "1080p"
+}
+
+### Get Single Link By ID
+GET {{baseUrl}}/api/links/1
+
+### Update Link By ID
+PATCH {{baseUrl}}/api/links/1
+Content-Type: application/json
+
+{
+  "last_check_status": "valid"
+}
+
+### Delete Link By ID
+# DELETE {{baseUrl}}/api/links/1
+
+
+### ==========================================
+### TASKS ROUTES
+### ==========================================
+
+### Get All Tasks
+GET {{baseUrl}}/api/tasks?page=1&limit=10
+
+### Find Task By Name
+GET {{baseUrl}}/api/tasks/by-name?taskName=مسلسل The Rookie الموسم 4 الحلقة 21 مترجم 2022
+
+### Get Single Task By ID
+GET {{baseUrl}}/api/tasks/11570
+
+### Create New Task
+POST {{baseUrl}}/api/tasks
+Content-Type: application/json
+
+{
+    "task_name": "download_movie",
+    "status": "failed",
+    "source_url": "https://example.com/file.mp4"
+}
+
+### Update Task By ID
+PATCH {{baseUrl}}/api/tasks/11792
+Content-Type: application/json
+
+{
+    "status": "completed"
+}
+
+### Delete Task By ID
+# DELETE {{baseUrl}}/api/tasks/1
+
+
+### ==========================================
+### ANALYTICS ROUTES
+### ==========================================
+
+### System Counters
+GET {{baseUrl}}/api/analytics/system-counters
+
+### Links Status Total (Broken / Valid / Pending)
+GET {{baseUrl}}/api/analytics/links/status/total?status=broken
+
+### Telegram Locked Links
+GET {{baseUrl}}/api/analytics/links/telegram/locked?page=1&limit=10
+
+### Broken Links List
+GET {{baseUrl}}/api/analytics/links/broken?page=1&limit=10
+
+### Episodes Missing Links By Server
+GET {{baseUrl}}/api/analytics/episodes/links/missing-by-server?serverName=voe
+
+### Tasks By Status
+GET {{baseUrl}}/api/analytics/tasks/by-status?status=idle
+
+### Medias Not Ready List
+GET {{baseUrl}}/api/analytics/medias/not-ready?page=1&limit=10
