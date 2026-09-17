@@ -82,7 +82,7 @@ ALLOWED_ORIGINS=http://localhost:5173,http://localhost:3000
 
 1. **Clone the repository:**
 ```bash
-git clone https://github.com/YOUR_USERNAME/egypyramid-backend.git
+git clone https://github.com/eslam985/egypyramid-cms-backend.git
 cd egypyramid-backend
 
 ```
