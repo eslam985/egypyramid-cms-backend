@@ -8,23 +8,14 @@ if (!process.env.DATABASE_URL) {
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
     ssl: { rejectUnauthorized: false },
-    max: 10,
+    max: 2, // خفض عدد الاتصالات المسموحة لكل Container على Vercel
     idleTimeoutMillis: 30000, 
-    connectionTimeoutMillis: 15000,
+    connectionTimeoutMillis: 10000,
 });
 
-// هذا السطر يمنع السيرفر من الانهيار أثناء التشغيل عند انقطاع أي اتصال خامل
+// التعامل مع أخطاء الاتصالات الخاملة لمنع انهيار التطبيق
 pool.on("error", (err) => {
     console.error("❌ Unexpected DB error on idle client:", err.message);
 });
-
-pool.connect()
-    .then((client) => {
-        console.log("✅ Postgres connected with pg Pool");
-        client.release();
-    })
-    .catch((err) => {
-        console.error("❌ DB Connection Error:", err.message);
-    });
 
 module.exports = pool;
