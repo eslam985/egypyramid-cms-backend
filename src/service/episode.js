@@ -117,11 +117,11 @@ const Episode = {
 
     async deleteEpisodeById(id) {
         const result = await pool.query(
-            `DELETE FROM episodes WHERE id = $1 RETURNING *`,
+            `DELETE FROM episodes WHERE id = $1`,
             [id],
         );
 
-        return result.rows[0] || null;
+        return result.rowCount
     },
 };
 

@@ -12,6 +12,8 @@ const corsOptions = {
     credentials: true,
     maxAge: 86400, // 24 ساعة بالثواني
     optionsSuccessStatus: 200,
+    exposedHeaders: ['Retry-After', 'RateLimit-Reset', 'RateLimit-Limit', 'RateLimit-Remaining', 'RateLimit-Policy']
+
 };
 
 module.exports = corsOptions;

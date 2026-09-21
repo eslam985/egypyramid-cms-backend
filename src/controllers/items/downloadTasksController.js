@@ -99,22 +99,55 @@ const handleFindByTaskByName = async (req, res, next) => {
 
 //  deleteTaskById(id)
 const handleDeleteTaskById = async (req, res, next) => {
-    try {
-        const id = req.params.id
-        const result = await DownLoadTask.deleteTaskById(id);
+  try {
+    const id = req.params.id
+    const deletedCount = await DownLoadTask.deleteTaskById(id);
 
-        if(!result)
-            return res.status(404).json( { success: false, message: `Not Found Task Id ${id}`} );
-
-        return res.status(200).json({
-            success: true,
-            message: `Task Id ${id} Deleted successfully`,
-            data: result
-        })
-    } catch (err) {
-        next(err);
+    if (deletedCount === 0) {
+      return res.status(404).json({
+        success: false,
+        message: `Not Found Task Id ${id}`,
+        data: { deletedCount: 0 }
+      });
     }
+
+    return res.status(200).json({
+      success: true,
+      message: `Task Id ${id} Deleted successfully`,
+      data: { deletedCount }
+    })
+  } catch (err) {
+    next(err);
+  }
 };
+
+const handleDeleteTasksByIds = async (req, res, next) => {
+  try {
+    const { ids } = req.body; // [1,5,10]
+    const deletedCount = await DownLoadTask.deleteTasksByIds(ids);
+    return res.status(200).json({
+      success: true,
+      message: `Deleted ${deletedCount} tasks`,
+      data: { deletedCount }
+    })
+  } catch (err) { next(err) }
+}
+
+const handleDeleteAllTasksFailed = async (req, res, next) => {
+  try {
+    const data = await DownLoadTask.deleteAllTasksFailed();
+
+    return res.status(200).json({
+      success: true,
+      message: data === 0 
+        ? 'No failed tasks found' 
+        : `Deleted ${data} tasks successfully`,
+      data
+    })
+  } catch (err) {
+    next(err);
+  }
+}
 
 module.exports = {
     handleGetAllTasks,
@@ -123,4 +156,6 @@ module.exports = {
     handleCreateTask,
     handleUpdateTaskById,
     handleDeleteTaskById,
+    handleDeleteAllTasksFailed,
+    handleDeleteTasksByIds
 };
