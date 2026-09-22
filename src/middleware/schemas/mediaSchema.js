@@ -50,8 +50,13 @@ const getMediasQuerySchema = z.object({
     }),
 });
 
+const getMediaByAnyId = z.object({
+    params: createIdParamSchema().shape.params,
+});
+
 module.exports = {
     createMediaSchema,
     updateMediaSchema,
     getMediasQuerySchema,
+    getMediaByAnyId,
 };

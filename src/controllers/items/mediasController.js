@@ -66,7 +66,27 @@ const handleFindMediaById = async (req, res, next) => {
 
         return res.status(200).json({
             success: true,
-            message: `Media ID ${mediaId} Found!`,
+            message: `Media ID ${mediaId} Founded successfully!`,
+            data: result,
+        });
+    } catch (err) {
+        next(err);
+    }
+};
+
+const handleFindMediaByAnyId = async (req, res, next) => {
+    try {
+        const id = req.params.id;
+        const targetTable = req.query.targetTable || null; // اختياري لاستغلال الميزة الجديدة
+        
+        const result = await Media.findMediaByAnyId(id, targetTable);
+        
+        if (!result || result.length === 0) 
+            return res.status(404).json({ success: false, message: `Media Id ${id} not found` });
+
+        return res.status(200).json({
+            success: true,
+            message: `Media ID ${id} Founded successfully!`,
             data: result,
         });
     } catch (err) {
@@ -99,4 +119,5 @@ module.exports = {
     handleFindAllMedia,
     handleFindMediaById,
     handleDeleteMediaById,
+    handleFindMediaByAnyId
 };

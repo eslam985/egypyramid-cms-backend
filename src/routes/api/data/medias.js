@@ -5,17 +5,19 @@ const { validateRequest } = require("../../../middleware/validation");
 const {createIdParamSchema}= require("../../../middleware/schemas/IDS_schema");
 
 const {
-    getMediasQuerySchema,
     createMediaSchema,
     updateMediaSchema,
+    getMediasQuerySchema,
+    getMediaByAnyId,
 } = require("../../../middleware/schemas/mediaSchema");
 
 const {
-    handleFindAllMedia,
     handleCreateMedia,
-    handleFindMediaById,
     handleUpdateMedia,
+    handleFindAllMedia,
+    handleFindMediaById,
     handleDeleteMediaById,
+    handleFindMediaByAnyId
 } = require("../../../controllers/items/mediasController");
 
 
@@ -27,7 +29,9 @@ router.post("/", validateRequest(createMediaSchema), handleCreateMedia);
 
 // Single Item Media Routes
 // /api/medias/:id
+router.get("/any-id/:id", validateRequest(getMediaByAnyId), handleFindMediaByAnyId);
 router.get("/:id", validateRequest(createIdParamSchema()), handleFindMediaById);
+
 router.patch("/:id", validateRequest(updateMediaSchema), handleUpdateMedia);
 router.delete("/:id", validateRequest(createIdParamSchema()), handleDeleteMediaById);
 
