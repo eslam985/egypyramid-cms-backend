@@ -1,6 +1,10 @@
 import os
 os.environ["GRADIO_SSR_MODE"] = "False"
+# ← أضف السطرين دول قبل أي import لـ gradio
+os.environ["GRADIO_CORS_ORIGINS"] = "https://egypyramid-cms-frontend.vercel.app"
+os.environ["GRADIO_ALLOWED_PATHS"] = ""
 
+=
 import spaces
 
 @spaces.GPU
@@ -114,7 +118,7 @@ async def wait_for_node(retries=10, delay=2):
     return False
 
 async def proxy(request: Request, path_name: str):
-    origin = request.headers.get("origin", "https://egypyramid-cms-frontend.vercel.app")
+    origin = request.headers.get("origin", "")
     
     cors_headers = {
         "Access-Control-Allow-Origin": origin,
