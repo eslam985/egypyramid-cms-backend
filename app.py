@@ -15,7 +15,6 @@ import gradio as gr
 from fastapi import Request, Response
 from fastapi.routing import APIRoute
 from fastapi.responses import JSONResponse
-from fastapi.middleware.cors import CORSMiddleware
 
 
 BACKEND_DIR = "."
@@ -58,9 +57,11 @@ fastapi_app, local_url, share_url = demo.launch(
     prevent_thread_lock=True,
 )
 
-# ← هنا مباشرة قبل أي حاجة تانية
-fastapi_app.add_middleware(
-    CORSMiddleware,
+# ✅ نضيف CORS على الـ middleware_stack مباشرة
+from starlette.middleware.cors import CORSMiddleware
+
+fastapi_app.middleware_stack = CORSMiddleware(
+    app=fastapi_app.middleware_stack,
     allow_origins=["https://egypyramid-cms-frontend.vercel.app"],
     allow_credentials=True,
     allow_methods=["*"],
