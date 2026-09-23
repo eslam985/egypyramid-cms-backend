@@ -1,4 +1,6 @@
 import os
+os.environ["GRADIO_SSR_MODE"] = "False"
+
 import subprocess
 import threading
 import time
@@ -94,8 +96,7 @@ def check_status():
     warmup()
     return "✅ سيرفر الـ Node.js يعمل في الخلفية بنجاح ويستقبل الطلبات!"
 
-# ssr_mode=False عشان نمنع Gradio من تشغيل Node proxy داخلي بيتعارك على البورت
-with gr.Blocks(title="EgyPyramid Backend", ssr_mode=False) as demo:
+with gr.Blocks(title="EgyPyramid Backend") as demo:
     gr.Markdown("## 🟢 EgyPyramid Node.js Backend is Running!")
     status_btn = gr.Button("فحص حالة السيرفر الداخلي")
     status_txt = gr.Textbox(label="الحالة")
