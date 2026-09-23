@@ -1,11 +1,16 @@
+import spaces
+
+@spaces.GPU
+def warmup():
+    return "ok"
+
+# باقي الاستيرادات بعد كده عادي
 import os
 os.environ["GRADIO_SSR_MODE"] = "False"
-
 import subprocess
 import threading
 import httpx
 import gradio as gr
-import spaces
 import uvicorn
 from fastapi import FastAPI, Request, Response
 from fastapi.responses import JSONResponse
@@ -16,7 +21,6 @@ INTERNAL_PORT = 3000
 NODE_PROCESS = None
 
 def start_node_backend():
-    """يشتغل في الخلفية بالكامل، من غير ما يعطّل ASGI startup"""
     global NODE_PROCESS
     print("📦 Installing Node.js dependencies...")
     install = subprocess.run(
@@ -41,7 +45,6 @@ def start_node_backend():
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # يبدأ الـ thread ويكمل فورًا من غير انتظار — الـ ASGI startup بيخلص فورًا
     threading.Thread(target=start_node_backend, daemon=True).start()
     yield
     if NODE_PROCESS:
@@ -64,10 +67,6 @@ async def proxy(request: Request, path_name: str):
         return Response(content=response.content, status_code=response.status_code, headers=dict(response.headers))
     except Exception as e:
         return JSONResponse(status_code=502, content={"error": "Backend communication failed", "details": str(e)})
-
-@spaces.GPU
-def warmup():
-    return "ok"
 
 def check_status():
     warmup()
