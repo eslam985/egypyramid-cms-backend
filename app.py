@@ -1,10 +1,12 @@
+import os
+os.environ["GRADIO_SSR_MODE"] = "False"
+
 import spaces
 
 @spaces.GPU
 def warmup():
     return "ok"
-
-import os
+  
 import subprocess
 import threading
 import httpx
@@ -75,7 +77,7 @@ async def proxy(request: Request, path_name: str):
 proxy_route = APIRoute(
     "/api/{path_name:path}",
     proxy,
-    methods=["GET", "POST", "PUT", "DELETE", "PATCH"],
+    methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
 )
 fastapi_app.router.routes.insert(0, proxy_route)
 
