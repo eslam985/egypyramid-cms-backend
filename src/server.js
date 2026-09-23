@@ -29,6 +29,7 @@ app.use(logger);
 app.use(helmet());
 
 // 1. CORS first, to ensure the headers are present in all responses (including 429 errors).
+app.use(cors(corsOptions));
 
 // 2. Health check Protected with healthLimiter
 app.use("/api/health", healthLimiter, require("./routes/health"));
