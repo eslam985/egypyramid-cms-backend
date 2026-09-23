@@ -32,7 +32,7 @@ app.use(helmet());
 app.use(cors(corsOptions));
 
 // 2. Health check Protected with healthLimiter
-app.use("/health", healthLimiter, require("./routes/health"));
+app.use("/api/health", healthLimiter, require("./routes/health"));
 
 // 3. Remaining general limiters and loop protection.
 app.use(burstLimiter);
