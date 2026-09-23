@@ -10,11 +10,13 @@ def warmup():
 import subprocess
 import threading
 import httpx
+import asyncio
 import gradio as gr
 from fastapi import Request, Response
 from fastapi.routing import APIRoute
 from fastapi.responses import JSONResponse
-import asyncio
+from fastapi.middleware.cors import CORSMiddleware
+
 
 BACKEND_DIR = "."
 INTERNAL_PORT = 3000
@@ -56,6 +58,17 @@ fastapi_app, local_url, share_url = demo.launch(
     prevent_thread_lock=True,
 )
 
+# ← هنا مباشرة قبل أي حاجة تانية
+fastapi_app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["https://egypyramid-cms-frontend.vercel.app"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+    expose_headers=["*"],
+)
+
+
 client = httpx.AsyncClient(base_url=f"http://localhost:{INTERNAL_PORT}", timeout=60.0)
 
 
@@ -74,12 +87,13 @@ async def wait_for_node(retries=10, delay=2):
     return False
 
 async def proxy(request: Request, path_name: str):
-    origin = request.headers.get("origin", "")
+    origin = request.headers.get("origin", "https://egypyramid-cms-frontend.vercel.app")
     
     cors_headers = {
         "Access-Control-Allow-Origin": origin,
         "Access-Control-Allow-Credentials": "true",
         "Access-Control-Expose-Headers": "*",
+        
     }
 
     if request.method == "OPTIONS":
