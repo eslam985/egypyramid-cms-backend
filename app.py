@@ -64,7 +64,7 @@ async def proxy(request: Request, path_name: str):
     try:
         response = await client.request(
             method=request.method,
-            url=f"/{path_name}",
+            url=f"/api/{path_name}",
             params=request.query_params,
             content=body,
             headers=headers,
