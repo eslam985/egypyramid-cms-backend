@@ -1,4 +1,3 @@
-import spaces
 import os
 import subprocess
 import time
@@ -80,7 +79,6 @@ async def proxy(request: Request, path_name: str):
         )
 
 # === واجهة Gradio (لإبقاء السبيس يعمل) ===
-@spaces.GPU
 def check_status():
     return "✅ سيرفر الـ Node.js يعمل في الخلفية بنجاح ويستقبل الطلبات (مع تجاوز فحص GPU)!"
 

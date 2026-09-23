@@ -3,7 +3,7 @@ title: Egypyramid Cms Backend
 emoji: 📊
 colorFrom: purple
 colorTo: gray
-sdk: gradio
+sdk: fastapi
 sdk_version: 6.28.0
 python_version: '3.12'
 hardware: cpu-basic
