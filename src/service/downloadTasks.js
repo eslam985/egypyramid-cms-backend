@@ -39,17 +39,25 @@ const DownLoadTask = {
     return result.rows[0] || null;
   },
 
-  async getAllTasks({ order = "DESC", page = 1, limit = 20, search } = {}) {
+async getAllTasks({ order = "DESC", page = 1, limit = 20, search, status } = {}) {
     const ordering = order === "ASC" ? "ASC" : "DESC";
 
     const queryParams = [];
     const queryParamsCount = [];
     const conditions = [];
 
+    // شرط البحث بالاسم
     if (search) {
       queryParams.push(`%${search}%`);
       queryParamsCount.push(`%${search}%`);
       conditions.push(`download_tasks.task_name ILIKE $${queryParams.length}`);
+    }
+
+    // شرط الفلترة بالحالة (الإضافة الجديدة)
+    if (status) {
+      queryParams.push(status);
+      queryParamsCount.push(status);
+      conditions.push(`download_tasks.status = $${queryParams.length}`);
     }
 
     const whereClause =
@@ -100,51 +108,6 @@ const DownLoadTask = {
     );
 
     return result.rows[0] || null;
-  },
-
-  // SELECT * FROM download_tasks WHERE task_name LIKE '%Beauty and the Beast%' LIMIT 100;
-
-  async findByTaskByName({ taskName, page = 1, limit = 20 }) {
-    const parsedPage = Math.max(1, parseInt(page, 10) || 1);
-    const parsedLimit = Math.max(1, parseInt(limit, 10) || 20);
-    const offset = (parsedPage - 1) * parsedLimit;
-
-    const targetTaskName = `%${taskName}%`;
-    const result = await pool.query(
-      `
-            SELECT
-                download_tasks.*,
-                COUNT(*) OVER() AS full_count
-            FROM
-                download_tasks
-            WHERE
-                task_name ILIKE $1
-            ORDER BY
-                created_at DESC
-            LIMIT
-                $2
-            OFFSET
-                $3
-        `,
-      // تعديل مهم: تم استبدال parsedPage بـ parsedLimit ليعمل الـ LIMIT بشكل صحيح
-      [targetTaskName, parsedLimit, offset],
-    );
-
-    // استخراج العدد الإجمالي من أول صف (إذا وُجدت نتائج)
-    const total = parseInt(result.rows[0]?.full_count, 10) || 0;
-
-    // فصل عمود full_count عن البيانات الأساسية لكل صف
-    const data = result.rows.map(({ full_count, ...item }) => item);
-
-    return {
-      data,
-      pagination: {
-        total,
-        page: parsedPage,
-        limit: parsedLimit,
-        totalPage: Math.ceil(total / parsedLimit) || 1,
-      },
-    };
   },
 
   async deleteTaskById(id) {

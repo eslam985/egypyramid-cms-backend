@@ -13,7 +13,6 @@ const {
 const {
     handleGetAllTasks,
     handleGetTaskById,
-    handleFindByTaskByName,
     handleCreateTask,
     handleUpdateTaskById,
     handleDeleteTaskById,
@@ -23,7 +22,6 @@ const {
 
 
 router.get("/", validateRequest(getAllTasksSchema), handleGetAllTasks);
-router.get("/by-name", validateRequest(findByTaskNameSchema), handleFindByTaskByName);
 router.post("/", validateRequest(createTaskSchema), handleCreateTask);
 router.delete("/failed", handleDeleteAllTasksFailed)
 

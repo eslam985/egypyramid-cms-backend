@@ -55,38 +55,6 @@ const Analytics = {
         return result.rows;
     },
 
-    // 3. Tasks Analytics (Paginated)
-    async getTasksByStatus({ status, page = 1, limit = 20 }) {
-        const parsedPage = Math.max(1, parseInt(page, 10) || 1);
-        const parsedLimit = Math.max(1, parseInt(limit, 10) || 20);
-        const offset = (parsedPage - 1) * parsedLimit;
-
-        const allowed = ["idle", "failed", "processing"];
-        const targetStatus = allowed.includes(status) ? status : "idle";
-
-        const result = await pool.query(
-            `SELECT *, COUNT(*) OVER()::integer AS full_count 
-            FROM download_tasks
-            WHERE status = $1
-            ORDER BY created_at DESC
-            LIMIT $2 OFFSET $3`,
-            [targetStatus, parsedLimit, offset],
-        );
-
-        const total = result.rows[0]?.full_count || 0;
-        const data = result.rows.map(({ full_count, ...item }) => item);
-
-        return {
-            data,
-            pagination: {
-                total,
-                page: parsedPage,
-                limit: parsedLimit,
-                totalPage: Math.ceil(total / parsedLimit) || 1,
-            },
-        };
-    },
-
     // 4. Medias Analytics (Paginated)
     async getNotReadyMedias({ page = 1, limit = 20 }) {
         const parsedPage = Math.max(1, parseInt(page, 10) || 1);

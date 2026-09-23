@@ -81,22 +81,6 @@ const handleGetMissingEpisodesByServer = async (req, res, next) => {
     }
 };
 
-// 4. Tasks Analytics
-// getTasksByStatus({status, page = 1, limit = 20 })
-const handleGetTasksByStatus = async (req, res, next) => {
-    try {
-        const result = await Analytics.getTasksByStatus(req.query);
-
-        return res.status(200).json({
-            success: true,
-            message: `Tasks for status [${req.query.status}] retrieved successfully`,
-            ...result
-        });
-    } catch (err) {
-        next(err);
-    }
-};
-
 
 // 5. Medias Analytics
 // getNotReadyMedias({ page = 1, limit = 20 })
@@ -120,6 +104,5 @@ module.exports = {
     handleGetLockedTelegramLinks,
     handleGetBrokenLinks,
     handleGetMissingEpisodesByServer,
-    handleGetTasksByStatus,
     handleGetNotReadyMedias,
 };

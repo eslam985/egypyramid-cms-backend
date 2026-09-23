@@ -70,33 +70,6 @@ const handleGetTaskById = async (req, res, next) => {
     }
 };
 
-// findByTaskByName(taskName)
-const handleFindByTaskByName = async (req, res, next) => {
-    try {
-        // 1. استخراج taskName من req.query
-        const { taskName } = req.query;
-
-        const result = await DownLoadTask.findByTaskByName(req.query);
-
-        // 2. التحقق مما إذا كانت مصفوفة البيانات فارغة
-        if (!result || !result.data || result.data.length === 0) {
-            return res.status(404).json({
-                success: false,
-                message: `لم يتم العثور على أي تاسك باسم: ${taskName}`
-            }); 
-        }
-
-        // 3. الآن taskName معرفة ويمكن استخدامها بأمان
-        return res.status(200).json({
-            success: true,
-            message: `Task Name '${taskName}' found successfully`,
-            ...result 
-        });
-    } catch (err) {
-        next(err);
-    }
-};
-
 //  deleteTaskById(id)
 const handleDeleteTaskById = async (req, res, next) => {
   try {
@@ -152,7 +125,6 @@ const handleDeleteAllTasksFailed = async (req, res, next) => {
 module.exports = {
     handleGetAllTasks,
     handleGetTaskById,
-    handleFindByTaskByName,
     handleCreateTask,
     handleUpdateTaskById,
     handleDeleteTaskById,

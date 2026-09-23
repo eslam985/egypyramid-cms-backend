@@ -4,7 +4,6 @@ const router = express.Router();
 const { validateRequest } = require("../../../middleware/validation.js");
 const {
     getTotalBrokenAndValidAndPendingLinksSchema,
-    getTasksByStatusSchema,
     getMissingEpisodesByServerSchema,
     getBrokenLinksSchema
 } = require("../../../middleware/schemas/analyticsSchema.js");
@@ -19,7 +18,6 @@ const {
     handleGetLockedTelegramLinks,
     handleGetBrokenLinks,
     handleGetMissingEpisodesByServer,
-    handleGetTasksByStatus,
     handleGetNotReadyMedias,
 } = require("../../../controllers/dashboard/analyticsController.js");
 
@@ -38,10 +36,6 @@ router.get("/links/broken",validateRequest(getBrokenLinksSchema),handleGetBroken
 router.get(
     "/episodes/links/missing-by-server",validateRequest(getMissingEpisodesByServerSchema),handleGetMissingEpisodesByServer,
 );
-
-// 4. Tasks Analytics
-router.get("/tasks/by-status",validateRequest(getTasksByStatusSchema),handleGetTasksByStatus,);
-
 
 // 5. Medias Analytics
 router.get("/medias/not-ready",validateRequest(paginationSchema),handleGetNotReadyMedias,);

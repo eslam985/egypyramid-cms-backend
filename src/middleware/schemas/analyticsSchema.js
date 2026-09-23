@@ -10,11 +10,6 @@ const getTotalBrokenAndValidAndPendingLinksSchema = z.object({
     }),
 });
 
-const getTasksByStatusSchema = z.object({
-    query: paginationSchema.shape.query.extend({
-        status: z.enum(["idle", "failed", "processing"]),
-    }),
-});
 
 const getMissingEpisodesByServerSchema = z.object({
     query: paginationSchema.shape.query.extend({
@@ -31,7 +26,6 @@ const getBrokenLinksSchema = z.object({
 
 module.exports = {
     getTotalBrokenAndValidAndPendingLinksSchema,
-    getTasksByStatusSchema,
     getMissingEpisodesByServerSchema,
     getBrokenLinksSchema,
 };
