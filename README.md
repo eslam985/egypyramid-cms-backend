@@ -9,6 +9,9 @@ python_version: '3.12'
 app_file: app.py
 pinned: false
 replicas: 1
+custom_headers:
+  Access-Control-Allow-Credentials: "true"
+  Access-Control-Allow-Origin: "https://egypyramid-cms-frontend.vercel.app"
 ---
 Check out the configuration reference at https://huggingface.co/docs/hub/spaces-config-reference
 # EgyPyramid Dashboard - Backend API
