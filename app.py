@@ -1,9 +1,7 @@
-import spaces
 import os
 import subprocess
 import time
 import httpx
-import uvicorn
 import gradio as gr
 from fastapi import FastAPI, Request, Response
 from fastapi.responses import JSONResponse
@@ -72,19 +70,17 @@ async def proxy(request: Request, path_name: str):
             content={"error": "Backend communication failed", "details": str(e)},
         )
 
-@spaces.GPU(duration=20)
+# واجهة Gradio العادية لإبقاء السبيس يعمل بدون الحاجة لـ ZeroGPU
 def check_status():
     return "✅ سيرفر الـ Node.js يعمل في الخلفية بنجاح ويستقبل الطلبات!"
 
 with gr.Blocks(title="EgyPyramid Backend") as demo:
     gr.Markdown("## 🟢 EgyPyramid Node.js Backend is Running!")
-    gr.Markdown("هذه الواجهة مخصصة لتلبية متطلبات ZeroGPU وإبقاء السيرفر يعمل.")
+    gr.Markdown("هذه الواجهة مخصصة لإبقاء السيرفر يعمل واستقبال الطلبات.")
     
     status_btn = gr.Button("فحص حالة السيرفر الداخلي")
     status_txt = gr.Textbox(label="الحالة")
     status_btn.click(fn=check_status, inputs=[], outputs=status_txt)
 
+# دمج الواجهة مع تطبيق الـ FastAPI
 app = gr.mount_gradio_app(app, demo, path="/")
-
-if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=7860)
