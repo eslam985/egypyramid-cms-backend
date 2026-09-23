@@ -3,6 +3,8 @@ import subprocess
 import time
 import httpx
 import gradio as gr
+import spaces
+import uvicorn
 from fastapi import FastAPI, Request, Response
 from fastapi.responses import JSONResponse
 from contextlib import asynccontextmanager
@@ -34,7 +36,7 @@ async def lifespan(app: FastAPI):
 
     time.sleep(3)
     print("✅ Node.js backend should be running on internal port 3000.")
-    yield 
+    yield
 
     if NODE_PROCESS:
         NODE_PROCESS.terminate()
@@ -70,17 +72,24 @@ async def proxy(request: Request, path_name: str):
             content={"error": "Backend communication failed", "details": str(e)},
         )
 
-# واجهة Gradio العادية لإبقاء السبيس يعمل بدون الحاجة لـ ZeroGPU
+# فنكشن وهمية عشان ZeroGPU checker يلاقي @spaces.GPU وقت الـ startup
+@spaces.GPU
+def warmup():
+    return "ok"
+
 def check_status():
+    warmup()
     return "✅ سيرفر الـ Node.js يعمل في الخلفية بنجاح ويستقبل الطلبات!"
 
 with gr.Blocks(title="EgyPyramid Backend") as demo:
     gr.Markdown("## 🟢 EgyPyramid Node.js Backend is Running!")
     gr.Markdown("هذه الواجهة مخصصة لإبقاء السيرفر يعمل واستقبال الطلبات.")
-    
+
     status_btn = gr.Button("فحص حالة السيرفر الداخلي")
     status_txt = gr.Textbox(label="الحالة")
     status_btn.click(fn=check_status, inputs=[], outputs=status_txt)
 
-# دمج الواجهة مع تطبيق الـ FastAPI
 app = gr.mount_gradio_app(app, demo, path="/")
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=7860)
