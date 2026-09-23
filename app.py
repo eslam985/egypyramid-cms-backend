@@ -1,183 +1,75 @@
 import os
 os.environ["GRADIO_SSR_MODE"] = "False"
-# ← أضف السطرين دول قبل أي import لـ gradio
-os.environ["GRADIO_CORS_ORIGINS"] = "https://egypyramid-cms-frontend.vercel.app"
-os.environ["GRADIO_ALLOWED_PATHS"] = ""
-  
-import spaces
 
-@spaces.GPU
-def warmup():
-    return "ok"
-  
-import subprocess
-import threading
-import httpx
-import asyncio
+import spaces, subprocess, threading, httpx, asyncio
 import gradio as gr
-from fastapi import Request, Response
-from fastapi.routing import APIRoute
+from fastapi import FastAPI, Request, Response
 from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 
-
-BACKEND_DIR = "."
 INTERNAL_PORT = 3000
-NODE_PROCESS = None
 
-def start_node_backend():
-    global NODE_PROCESS
-    print("📦 Installing Node.js dependencies...")
-    install = subprocess.run(["npm", "install"], cwd=BACKEND_DIR, capture_output=True, text=True)
-    print(install.stdout)
-    if install.returncode != 0:
-        print("❌ npm install failed:", install.stderr)
-        return
-    print("🚀 Starting Node.js backend...")
-    env = os.environ.copy()
-    env["PORT"] = str(INTERNAL_PORT)
-    NODE_PROCESS = subprocess.Popen(
-        ["npm", "start"], cwd=BACKEND_DIR, env=env,
-        stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, bufsize=1,
-    )
-    for line in iter(NODE_PROCESS.stdout.readline, ""):
-        print(f"[NODE] {line}", end="")
+# ← FastAPI أولاً وقبل Gradio
+app = FastAPI()
 
-def check_status():
-    warmup()
-    return "✅ سيرفر الـ Node.js يعمل في الخلفية بنجاح!"
-
-with gr.Blocks(title="EgyPyramid Backend") as demo:
-    gr.Markdown("## 🟢 EgyPyramid Node.js Backend")
-    status_btn = gr.Button("فحص حالة السيرفر الداخلي")
-    status_txt = gr.Textbox(label="الحالة")
-    status_btn.click(fn=check_status, inputs=[], outputs=status_txt)
-
-threading.Thread(target=start_node_backend, daemon=True).start()
-
-fastapi_app, local_url, share_url = demo.launch(
-    server_name="0.0.0.0",
-    server_port=7860,
-    prevent_thread_lock=True,
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["https://egypyramid-cms-frontend.vercel.app"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+    expose_headers=["*"],
 )
-
-fastapi_app, local_url, share_url = demo.launch(
-    server_name="0.0.0.0",
-    server_port=7860,
-    prevent_thread_lock=True,
-)
-
-
-# ← وحط ده بدلهم
-from starlette.types import ASGIApp, Receive, Scope, Send
-
-class PassthroughCORSMiddleware:
-    def __init__(self, app: ASGIApp):
-        self.app = app
-
-    async def __call__(self, scope: Scope, receive: Receive, send: Send):
-        if scope["type"] == "http" and scope["method"] == "OPTIONS":
-            origin = ""
-            req_headers = dict(scope.get("headers", []))
-            origin = req_headers.get(b"origin", b"").decode()
-            requested_headers = req_headers.get(b"access-control-request-headers", b"content-type").decode()
-
-            response = Response(
-                status_code=200,
-                headers={
-                    "Access-Control-Allow-Origin": origin,
-                    "Access-Control-Allow-Credentials": "true",
-                    "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
-                    "Access-Control-Allow-Headers": requested_headers,
-                    "Access-Control-Max-Age": "600",
-                },
-            )
-            await response(scope, receive, send)
-            return
-
-        await self.app(scope, receive, send)
-
-fastapi_app.middleware_stack = PassthroughCORSMiddleware(fastapi_app.middleware_stack)
-
 
 client = httpx.AsyncClient(base_url=f"http://localhost:{INTERNAL_PORT}", timeout=60.0)
 
-
-async def wait_for_node(retries=10, delay=2):
-    for i in range(retries):
-        try:
-            r = await client.get("/api/health")  # أو أي endpoint خفيف
-            if r.status_code < 500:
-                print("✅ Node is ready")
-                return True
-        except Exception:
-            pass
-        print(f"⏳ Waiting for Node... ({i+1}/{retries})")
-        await asyncio.sleep(delay)
-    print("❌ Node failed to start")
-    return False
-
+@app.api_route("/api/{path_name:path}", methods=["GET","POST","PUT","DELETE","PATCH","OPTIONS"])
 async def proxy(request: Request, path_name: str):
-    origin = request.headers.get("origin", "")
-    
-    cors_headers = {
-        "Access-Control-Allow-Origin": origin,
-        "Access-Control-Allow-Credentials": "true",
-        "Access-Control-Expose-Headers": "*",
-        
-    }
-
-    if request.method == "OPTIONS":
-        cors_headers.update({
-            "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
-            "Access-Control-Allow-Headers": request.headers.get(
-                "access-control-request-headers", "Content-Type, Authorization"
-            ),
-            "Access-Control-Max-Age": "600",
-        })
-        return Response(status_code=200, headers=cors_headers)
-
     body = await request.body()
     headers = dict(request.headers)
     headers.pop("host", None)
-    
-    # Retry logic لو Node لسه بتبدأ
-    last_error = None
-    for attempt in range(3):
-        try:
-            response = await client.request(
-                method=request.method,
-                url=f"/api/{path_name}",
-                params=request.query_params,
-                content=body,
-                headers=headers,
-            )
-            response_headers = dict(response.headers)
-            response_headers.update(cors_headers)
-            response_headers.pop("content-encoding", None)
-            response_headers.pop("transfer-encoding", None)
-            
-            return Response(
-                content=response.content,
-                status_code=response.status_code,
-                headers=response_headers,
-            )
-        except Exception as e:
-            last_error = e
-            print(f"⚠️ Attempt {attempt+1} failed: {e}")
-            await asyncio.sleep(1)
-    
-    return JSONResponse(
-        status_code=502,
-        content={"error": "Backend communication failed", "details": str(last_error)},
-        headers=cors_headers,
+    try:
+        response = await client.request(
+            method=request.method,
+            url=f"/api/{path_name}",
+            params=request.query_params,
+            content=body,
+            headers=headers,
+        )
+        resp_headers = dict(response.headers)
+        resp_headers.pop("content-encoding", None)
+        resp_headers.pop("transfer-encoding", None)
+        return Response(content=response.content, status_code=response.status_code, headers=resp_headers)
+    except Exception as e:
+        return JSONResponse(status_code=502, content={"error": str(e)})
+
+# ← Gradio جوّا FastAPI
+@spaces.GPU
+def warmup():
+    return "ok"
+
+def check_status():
+    warmup()
+    return "✅ Node.js يعمل!"
+
+with gr.Blocks(title="EgyPyramid Backend") as demo:
+    gr.Markdown("## 🟢 EgyPyramid Node.js Backend")
+    status_btn = gr.Button("فحص حالة السيرفر")
+    status_txt = gr.Textbox(label="الحالة")
+    status_btn.click(fn=check_status, inputs=[], outputs=status_txt)
+
+# ← mount Gradio على FastAPI
+app = gr.mount_gradio_app(app, demo, path="/")
+
+def start_node_backend():
+    env = os.environ.copy()
+    env["PORT"] = str(INTERNAL_PORT)
+    subprocess.run(["npm", "install"], cwd=".")
+    proc = subprocess.Popen(
+        ["npm", "start"], cwd=".", env=env,
+        stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, bufsize=1,
     )
+    for line in iter(proc.stdout.readline, ""):
+        print(f"[NODE] {line}", end="")
 
-# 🔑 السطر الجديد المهم: نسجل الـ route ونحطه في أول القايمة عشان يسبق كاتش-أول بتاع Gradio
-proxy_route = APIRoute(
-    "/api/{path_name:path}",
-    proxy,
-    methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-)
-fastapi_app.router.routes.insert(0, proxy_route)
-
-demo.block_thread()
+threading.Thread(target=start_node_backend, daemon=True).start()
