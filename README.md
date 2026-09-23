@@ -1,3 +1,16 @@
+---
+title: Egypyramid Cms Backend
+emoji: 📊
+colorFrom: purple
+colorTo: gray
+sdk: gradio
+sdk_version: 6.28.0
+python_version: '3.12'
+app_file: app.py
+pinned: false
+---
+
+Check out the configuration reference at https://huggingface.co/docs/hub/spaces-config-reference
 # EgyPyramid Dashboard - Backend API
 
 A production-ready RESTful API and serverless backend powering the **EgyPyramid Dashboard**. Built with Node.js, Express 5, and PostgreSQL (Supabase), featuring JWT authentication via httpOnly cookies, Zod schema validation, modular service architecture, and deployment support for Vercel Serverless Functions.
