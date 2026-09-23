@@ -1,3 +1,4 @@
+import spaces
 import os
 import subprocess
 import time
@@ -8,6 +9,10 @@ from fastapi import FastAPI, Request, Response
 from fastapi.responses import JSONResponse
 from contextlib import asynccontextmanager
 
+@spaces.GPU
+def dummy_gpu_check():
+    pass
+  
 BACKEND_DIR = "."  # مسار ملفات النود
 NODE_PROCESS = None
 INTERNAL_PORT = 3000
