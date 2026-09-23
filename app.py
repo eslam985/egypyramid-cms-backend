@@ -4,7 +4,6 @@ import time
 import httpx
 import gradio as gr
 import spaces
-import uvicorn
 from fastapi import FastAPI, Request, Response
 from fastapi.responses import JSONResponse
 from contextlib import asynccontextmanager
@@ -72,7 +71,6 @@ async def proxy(request: Request, path_name: str):
             content={"error": "Backend communication failed", "details": str(e)},
         )
 
-# فنكشن وهمية عشان ZeroGPU checker يلاقي @spaces.GPU وقت الـ startup
 @spaces.GPU
 def warmup():
     return "ok"
@@ -90,6 +88,3 @@ with gr.Blocks(title="EgyPyramid Backend") as demo:
     status_btn.click(fn=check_status, inputs=[], outputs=status_txt)
 
 app = gr.mount_gradio_app(app, demo, path="/")
-
-if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=7860)
