@@ -63,11 +63,9 @@ app.use(notFound);
 
 app.use(errorHandler);
 
-if (process.env.NODE_ENV !== "production") {
-    const server = app.listen(PORT, "0.0.0.0", () =>
-        console.log(`server running in port ${PORT}`),
-    );
-    gracefulShutdown(server, pool);
-}
+const server = app.listen(PORT, "0.0.0.0", () =>
+    console.log(`server running in port ${PORT}`),
+);
+gracefulShutdown(server, pool);
 
 module.exports = app;
