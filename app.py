@@ -3,8 +3,7 @@ os.environ["GRADIO_SSR_MODE"] = "False"
 # ← أضف السطرين دول قبل أي import لـ gradio
 os.environ["GRADIO_CORS_ORIGINS"] = "https://egypyramid-cms-frontend.vercel.app"
 os.environ["GRADIO_ALLOWED_PATHS"] = ""
-
-=
+  
 import spaces
 
 @spaces.GPU
