@@ -3,10 +3,9 @@ title: Egypyramid Cms Backend
 emoji: 📊
 colorFrom: purple
 colorTo: gray
-sdk: docker
+sdk: gradio
 sdk_version: 6.28.0
 python_version: '3.12'
-hardware: cpu-basic
 app_file: app.py
 pinned: false
 ---
