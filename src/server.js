@@ -42,7 +42,7 @@ app.use(generalLimiter);
 app.use(express.urlencoded({ extended: false, limit: "10kb" }));
 app.use(express.json({ limit: "10kb" }));
 app.use(cookieParser());
-
+console.log("Allowed origins:", allowedOrigins);
 // public Route
 app.use("/api/auth/login", authLimiter, require("./routes/api/auth/login.js"));
 app.use("/api/auth/refresh", require("./routes/api/auth/refresh.js"));
