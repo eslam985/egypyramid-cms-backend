@@ -14,6 +14,7 @@ import gradio as gr
 from fastapi import Request, Response
 from fastapi.routing import APIRoute
 from fastapi.responses import JSONResponse
+import asyncio
 
 BACKEND_DIR = "."
 INTERNAL_PORT = 3000
@@ -57,17 +58,30 @@ fastapi_app, local_url, share_url = demo.launch(
 
 client = httpx.AsyncClient(base_url=f"http://localhost:{INTERNAL_PORT}", timeout=60.0)
 
+
+async def wait_for_node(retries=10, delay=2):
+    for i in range(retries):
+        try:
+            r = await client.get("/api/health")  # أو أي endpoint خفيف
+            if r.status_code < 500:
+                print("✅ Node is ready")
+                return True
+        except Exception:
+            pass
+        print(f"⏳ Waiting for Node... ({i+1}/{retries})")
+        await asyncio.sleep(delay)
+    print("❌ Node failed to start")
+    return False
+
 async def proxy(request: Request, path_name: str):
     origin = request.headers.get("origin", "")
     
-    # CORS headers الأساسية
     cors_headers = {
         "Access-Control-Allow-Origin": origin,
         "Access-Control-Allow-Credentials": "true",
         "Access-Control-Expose-Headers": "*",
     }
 
-    # Handle preflight بدون ما تروح للـ Node
     if request.method == "OPTIONS":
         cors_headers.update({
             "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
@@ -82,34 +96,37 @@ async def proxy(request: Request, path_name: str):
     headers = dict(request.headers)
     headers.pop("host", None)
     
-    try:
-        response = await client.request(
-            method=request.method,
-            url=f"/api/{path_name}",
-            params=request.query_params,
-            content=body,
-            headers=headers,
-        )
-        
-        # دمج headers بتاعت Node مع CORS headers
-        response_headers = dict(response.headers)
-        response_headers.update(cors_headers)
-        
-        # إزالة content-encoding عشان httpx بيفك الـ compression تلقائياً
-        response_headers.pop("content-encoding", None)
-        response_headers.pop("transfer-encoding", None)
-        
-        return Response(
-            content=response.content,
-            status_code=response.status_code,
-            headers=response_headers,
-        )
-    except Exception as e:
-        return JSONResponse(
-            status_code=502,
-            content={"error": "Backend communication failed", "details": str(e)},
-            headers=cors_headers,
-        )
+    # Retry logic لو Node لسه بتبدأ
+    last_error = None
+    for attempt in range(3):
+        try:
+            response = await client.request(
+                method=request.method,
+                url=f"/api/{path_name}",
+                params=request.query_params,
+                content=body,
+                headers=headers,
+            )
+            response_headers = dict(response.headers)
+            response_headers.update(cors_headers)
+            response_headers.pop("content-encoding", None)
+            response_headers.pop("transfer-encoding", None)
+            
+            return Response(
+                content=response.content,
+                status_code=response.status_code,
+                headers=response_headers,
+            )
+        except Exception as e:
+            last_error = e
+            print(f"⚠️ Attempt {attempt+1} failed: {e}")
+            await asyncio.sleep(1)
+    
+    return JSONResponse(
+        status_code=502,
+        content={"error": "Backend communication failed", "details": str(last_error)},
+        headers=cors_headers,
+    )
 
 # 🔑 السطر الجديد المهم: نسجل الـ route ونحطه في أول القايمة عشان يسبق كاتش-أول بتاع Gradio
 proxy_route = APIRoute(
