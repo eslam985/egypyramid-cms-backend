@@ -57,17 +57,43 @@ fastapi_app, local_url, share_url = demo.launch(
     prevent_thread_lock=True,
 )
 
-# ✅ نضيف CORS على الـ middleware_stack مباشرة
-from starlette.middleware.cors import CORSMiddleware
-
-fastapi_app.middleware_stack = CORSMiddleware(
-    app=fastapi_app.middleware_stack,
-    allow_origins=["https://egypyramid-cms-frontend.vercel.app"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-    expose_headers=["*"],
+fastapi_app, local_url, share_url = demo.launch(
+    server_name="0.0.0.0",
+    server_port=7860,
+    prevent_thread_lock=True,
 )
+
+
+# ← وحط ده بدلهم
+from starlette.types import ASGIApp, Receive, Scope, Send
+
+class PassthroughCORSMiddleware:
+    def __init__(self, app: ASGIApp):
+        self.app = app
+
+    async def __call__(self, scope: Scope, receive: Receive, send: Send):
+        if scope["type"] == "http" and scope["method"] == "OPTIONS":
+            origin = ""
+            req_headers = dict(scope.get("headers", []))
+            origin = req_headers.get(b"origin", b"").decode()
+            requested_headers = req_headers.get(b"access-control-request-headers", b"content-type").decode()
+
+            response = Response(
+                status_code=200,
+                headers={
+                    "Access-Control-Allow-Origin": origin,
+                    "Access-Control-Allow-Credentials": "true",
+                    "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
+                    "Access-Control-Allow-Headers": requested_headers,
+                    "Access-Control-Max-Age": "600",
+                },
+            )
+            await response(scope, receive, send)
+            return
+
+        await self.app(scope, receive, send)
+
+fastapi_app.middleware_stack = PassthroughCORSMiddleware(fastapi_app.middleware_stack)
 
 
 client = httpx.AsyncClient(base_url=f"http://localhost:{INTERNAL_PORT}", timeout=60.0)
