@@ -4,10 +4,10 @@ const jwt = require("jsonwebtoken");
 
 const handleRefreshToken = async (req, res, next) => {
     try {
-        const cookies = req.cookies;
-        if (!cookies?.jwt) return res.sendStatus(401);
+        const authHeader = req.headers["x-refresh-token"];
+        if (!authHeader) return res.sendStatus(401);
+        const refreshToken = authHeader;
 
-        const refreshToken = cookies.jwt;
         const isProduction = process.env.NODE_ENV === "production";
         const cookieOptions = {
             httpOnly: true,

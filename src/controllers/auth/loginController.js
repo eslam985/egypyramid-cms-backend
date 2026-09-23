@@ -35,12 +35,12 @@ const handleLogin = async (req, res, next) => {
         );
 
         // save refreshToken in cookie
-        res.cookie("jwt", refreshToken, {
-            httpOnly: true,
-            sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
-            secure: process.env.NODE_ENV === "production",
-            maxAge: 7 * 24 * 60 * 60 * 1000,
-        });
+        // res.cookie("jwt", refreshToken, {
+        //     httpOnly: true,
+        //     sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
+        //     secure: process.env.NODE_ENV === "production",
+        //     maxAge: 7 * 24 * 60 * 60 * 1000,
+        // });
 
 
         // حفظ الجلسة مع الـ IP والـ User-Agent في قاعدة البيانات
@@ -50,7 +50,10 @@ const handleLogin = async (req, res, next) => {
         return res.status(200).json({
             success: true,
             message: "Login successful",
-            data: accessToken
+            data: {
+                accessToken,
+                refreshToken,  // ← أضفه هنا
+            }
         });
     } catch (err) {
         next(err);
