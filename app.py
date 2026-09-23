@@ -1,3 +1,4 @@
+import uvicorn
 import os
 import subprocess
 import time
@@ -80,3 +81,7 @@ async def proxy(request: Request, path_name: str):
             status_code=502,
             content={"error": "Backend communication failed", "details": str(e)},
         )
+
+
+if __name__ == "__main__":
+    uvicorn.run("app:app", host="0.0.0.0", port=7860)
