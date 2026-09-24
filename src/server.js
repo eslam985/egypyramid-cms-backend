@@ -42,14 +42,17 @@ app.use(generalLimiter);
 app.use(express.urlencoded({ extended: false, limit: "10kb" }));
 app.use(express.json({ limit: "10kb" }));
 app.use(cookieParser());
-console.log("Allowed origins:", allowedOrigins);
+
 // public Route
 app.use("/api/auth/login", authLimiter, require("./routes/api/auth/login.js"));
+
 app.use("/api/auth/refresh", require("./routes/api/auth/refresh.js"));
 app.use("/api/auth/logout", require("./routes/api/auth/logout.js"));
 
 // Protected paths
 app.use(verifyJWT);
+app.use('/api/avatar', require('./routes/api/auth/avatar'));
+app.use("/api/user/", require("./routes/api/auth/user.js"));
 app.use("/api/analytics", require("./routes/api/data/analytics.js"));
 app.use("/api/tasks", require("./routes/api/data/downloadTasks.js"));
 app.use("/api/genres", require("./routes/api/data/genres.js"));

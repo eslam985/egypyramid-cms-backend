@@ -25,7 +25,7 @@ const handleLogout = async (req, res, next) => {
         }
 
         // حذف جلسة هذا الجهاز فقط من جدول sessions
-        await User.removeSession(refreshToken);
+        await User.removeSessionRefreshToken(refreshToken);
 
         // مسح الكوكي من المتصفح
         res.clearCookie("jwt", cookieOptions);

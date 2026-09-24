@@ -13,9 +13,9 @@ const validateRequest = (schema) => (req, res, next) => {
 
     if (!result.success) {
         return res.status(400).json({
-        success: false,
-        message: "خطأ في البيانات المدخلة",
-        errors: result.error.flatten().fieldErrors,
+          success: false,
+          message: "خطأ في البيانات المدخلة",
+          errors: result.error.flatten().fieldErrors,
         });
     }
 

@@ -1,6 +1,35 @@
 -- /projects/project_Full-stack/egyPyramidDashbord/backend/egyDashbordApi/database/schema.sql
--- users
+-- sessions
+create table public.sessions (
+  id uuid not null default gen_random_uuid (),
+  user_id uuid not null,
+  refresh_token text not null,
+  user_agent text null,
+  ip_address text null,
+  expires_at timestamp with time zone not null,
+  created_at timestamp with time zone not null default now(),
+  updated_at timestamp with time zone not null default now(),
+  constraint sessions_pkey primary key (id),
+  constraint sessions_refresh_token_key unique (refresh_token),
+  constraint sessions_user_id_fkey foreign KEY (user_id) references users (id) on delete CASCADE
+) TABLESPACE pg_default;
 
+create index IF not exists sessions_refresh_token_idx on public.sessions using btree (refresh_token) TABLESPACE pg_default;
+
+create index IF not exists sessions_user_id_idx on public.sessions using btree (user_id) TABLESPACE pg_default;
+-- users
+create table public.users (
+  id uuid not null default gen_random_uuid (),
+  username text not null,
+  email text not null,
+  password text not null,
+  created_at timestamp with time zone not null default now(),
+  updated_at timestamp with time zone not null default now(),
+  avatar_url text null,
+  constraint users_pkey primary key (id),
+  constraint users_email_key unique (email),
+  constraint users_username_key unique (username)
+) TABLESPACE pg_default;
 
 -- medias
 create table public.medias (
