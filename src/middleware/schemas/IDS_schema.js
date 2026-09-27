@@ -13,6 +13,7 @@ const createIdParamSchema = (paramName = "id") => {
   });
 };
 
+
 // للـ bulk delete
 const deleteManyIdsSchema = z.object({
   body: z.object({

@@ -24,7 +24,7 @@ const User = {
     const values = Object.values(data);
 
     const result = await pool.query(
-      `UPDATE users SET ${seter}, updated_at = NOW() WHERE id = $1 RETURNING id, username, email, avatar_url`,
+      `UPDATE users SET ${seter}, updated_at = NOW() WHERE id = $1 RETURNING id, username, email, avatar_url, avatar_history`,
       [userId, ...values],
     );
 
@@ -43,9 +43,18 @@ const User = {
   async findUserById(userId) {
     const result = await pool.query(
       `SELECT 
-        id, username, email, password, created_at, updated_at, avatar_url 
+        id, username, email, created_at, updated_at, avatar_url, avatar_history
       FROM users 
       WHERE id = $1`,
+      [userId],
+    );
+
+    return result.rows[0] || null;
+  },
+  // 💡 دالة مخصصة للعمليات الحساسة مثل مقارنة الباسورد
+  async findUserPasswordWithId(userId) {
+    const result = await pool.query(
+      `SELECT id, password FROM users WHERE id = $1`,
       [userId],
     );
 
@@ -55,7 +64,7 @@ const User = {
   async findByEmail(email) {
     const result = await pool.query(
       `SELECT 
-        id, username, email, password, created_at, updated_at, avatar_url 
+        id, username, email, password, created_at, updated_at, avatar_url, avatar_history 
       FROM users 
       WHERE email = $1`,
       [email],
@@ -67,7 +76,7 @@ const User = {
   async findByUsername(username) {
     const result = await pool.query(
       `SELECT 
-        id, username, email, password, created_at, updated_at, avatar_url 
+        id, username, email, created_at, updated_at, avatar_url, avatar_history 
       FROM users 
       WHERE username = $1`,
       [username],
@@ -85,13 +94,29 @@ const User = {
     );
     return result.rows[0];
   },
-  async getSessionsByUserId(userId) {
+
+  async getSessionsByUserId(userId, sortBy = "expires_at", sortOrder = "ASC") {
+    const allowedColumns = {
+      user_agent: "user_agent",
+      ip_address: "ip_address",
+      expires_at: "expires_at",
+      created_at: "created_at",
+      updated_at: "updated_at",
+    };
+
+    const orderByColumn = allowedColumns[sortBy] || "expires_at";
+    const orderDirection =
+      String(sortOrder).toUpperCase() === "ASC" ? "ASC" : "DESC";
+
     if (!userId) return null;
     const result = await pool.query(
       `SELECT 
         id, user_id, user_agent, ip_address, expires_at, created_at, updated_at 
       FROM sessions 
-      WHERE user_id = $1`,
+      WHERE user_id = $1
+      ORDER BY ${orderByColumn} ${orderDirection}
+      
+      `,
       [userId],
     );
 
@@ -130,17 +155,18 @@ const User = {
     );
     return result.rowCount > 0;
   },
-    async removeSessionById(sessionId) {
-    const result = await pool.query(
-      `DELETE FROM sessions WHERE id = $1`,
-      [sessionId],
-    );
+  async removeSessionById(sessionId) {
+    const result = await pool.query(`DELETE FROM sessions WHERE id = $1`, [
+      sessionId,
+    ]);
     return result.rowCount > 0;
   },
   // حذف جميع جلسات المستخدم عند تغيير كلمة المرور
   async removeAllUserSessions(userId) {
-    const result = await pool.query(`DELETE FROM sessions WHERE user_id = $1`, [userId,]);
-      
+    const result = await pool.query(`DELETE FROM sessions WHERE user_id = $1`, [
+      userId,
+    ]);
+
     return result.rowCount > 0;
   },
 };

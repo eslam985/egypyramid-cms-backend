@@ -27,4 +27,13 @@ const validateRequest = (schema) => (req, res, next) => {
     next();
 };
 
-module.exports = { validateRequest };
+const validateFile = (schema) => (req, res, next) => {
+    try {
+        schema.parse({ file: req.file });
+        next();
+    } catch (err) {
+        return res.status(400).json({ success: false, errors: err.errors });
+    }
+};
+
+module.exports = { validateRequest, validateFile };

@@ -23,7 +23,8 @@ POST {{baseUrl}}/api/auth/refresh
 ### 5. Logout
 POST {{baseUrl}}/api/auth/logout
 
-
+### Get Sessions By User Id
+GET {{baseUrl}}/api/user/sessions
 ### ==========================================
 ### GENRES ROUTES
 ### ==========================================

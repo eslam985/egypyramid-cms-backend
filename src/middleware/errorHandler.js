@@ -5,6 +5,25 @@ const errorHandler = (err, req, res, next) => {
     logEvents(`${err.name}: ${err.message}`, "errLog.txt");
     console.error(err.stack);
 
+
+    
+    // التقط خطأ الحجم الخاص بـ Multer صراحة وحوله لـ 413 (Payload Too Large)
+    if (err.code === 'LIMIT_FILE_SIZE') {
+        return res.status(413).json({
+            success: false,
+            message: "حجم الملف كبير جداً! الحد الأقصى المسموح به هو 5 ميجابايت."
+        });
+    }
+
+    // التقط أي أخطاء أخرى خاصة بـ Multer (مثل الحقول غير المتوقعة)
+    if (err.name === 'MulterError') {
+        return res.status(400).json({
+            success: false,
+            message: `خطأ في تحميل الملف: ${err.message}`
+        });
+    }
+
+
     // 2. خطأ الـ JSON غير السليم
     if (err instanceof SyntaxError && err.status === 400 && "body" in err) {
         return res.status(400).json({

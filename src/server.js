@@ -11,10 +11,10 @@ const gracefulShutdown = require("./config/gracefulShutdown");
 const verifyJWT = require("./middleware/verifyJWT.js");
 const corsOptions = require("./config/corsOptions.js");
 const {
-    authLimiter,
-    generalLimiter,
-    burstLimiter,
-    healthLimiter,
+  authLimiter,
+  generalLimiter,
+  burstLimiter,
+  healthLimiter,
 } = require("./config/rateLimiter");
 
 const allowedOrigins = require("./config/allowedOrigins.js");
@@ -51,7 +51,7 @@ app.use("/api/auth/logout", require("./routes/api/auth/logout.js"));
 
 // Protected paths
 app.use(verifyJWT);
-app.use('/api/avatar', require('./routes/api/auth/avatar'));
+app.use("/api/avatar", require("./routes/api/auth/avatar"));
 app.use("/api/user/", require("./routes/api/auth/user.js"));
 app.use("/api/analytics", require("./routes/api/data/analytics.js"));
 app.use("/api/tasks", require("./routes/api/data/downloadTasks.js"));
@@ -67,7 +67,7 @@ app.use(notFound);
 app.use(errorHandler);
 
 const server = app.listen(PORT, "0.0.0.0", () =>
-    console.log(`server running in port ${PORT}`),
+  console.log(`server running in port ${PORT}`),
 );
 gracefulShutdown(server, pool);
 

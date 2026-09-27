@@ -5,13 +5,15 @@ const handleChangePassword = async (req, res, next) => {
     try {
       const userId = req.userId; 
       // 1. جلب المستخدم مع الباسورد المشفر الحالي
-      const isExistUser = await User.findUserById(userId)
+      const isExistUser = await User.findUserPasswordWithId(userId)
       if (!isExistUser) return res.status(404).json({ success: false, message: `Not Found User Id ${userId}` })
 
       const { currentPassword, newPassword } = req.body
       // 2. مقارنة كلمة المرور القديمة
       const isMatch = await bcrypt.compare(currentPassword, isExistUser.password);
-      if (!isMatch) return { success: false, message: "The current password is incorrect." };
+      if (!isMatch) 
+          return res.status(400).json({ success: false, message: "The current password is incorrect." });
+
 
       // 3. تشفير كلمة المرور الجديدة
       const hashedPassword = await bcrypt.hash(newPassword, 10);
@@ -67,12 +69,12 @@ const handleUpdateUserInfo = async (req, res, next) => {
 
 const handleGetSessionsByUserId = async (req, res, next) => {
   try{
-      const userId = req.userId;; // أو req.userId بناءً على ما تعينه داخل verifyJWT
-
+      const userId = req.userId; // أو req.userId بناءً على ما تعينه داخل verifyJWT
+      
       const isExistUser = await User.findUserById(userId)
       if (!isExistUser) return res.status(404).json({ success: false, message: `Not Found User Id ${userId}` })
-      
-      const isSessions = await User.getSessionsByUserId(userId)
+      const { sortBy, sortOrder } = req.query
+      const isSessions = await User.getSessionsByUserId(userId, sortBy, sortOrder)
 
       return res.status(200).json({
         success: true,
@@ -88,7 +90,7 @@ const handleGetSessionsByUserId = async (req, res, next) => {
 const handleRemoveSessionById = async (req, res, next) => {
   try{
       const sessionId = req.body.sessionId
-
+      const userId = req.userId
       const isExistUser = await User.findUserById(userId)
       if (!isExistUser) return res.status(404).json({ success: false, message: `Not Found User Id ${userId}` })
       
@@ -109,9 +111,28 @@ const handleRemoveSessionById = async (req, res, next) => {
   }
 }
 
+const handleFindUserById = async (req, res, next) => {
+  try{
+      const userId = req.userId
+
+
+      const isExistUser = await User.findUserById(userId)
+      if (!isExistUser) return res.status(404).json({ success: false, message: `Not Found User Id ${userId}` })
+      
+      return res.status(200).json({
+        success: true,
+        message: `Found User Id ${userId} successfully`,
+        data: isExistUser
+      });
+
+  }catch (err){
+    next(err)
+  }
+}
 module.exports = { 
   handleChangePassword, 
   handleUpdateUserInfo, 
   handleGetSessionsByUserId,
-  handleRemoveSessionById
+  handleRemoveSessionById,
+  handleFindUserById
 };
