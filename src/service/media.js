@@ -134,7 +134,7 @@ const Media = {
     search,
     sortBy = "created_at",
     sortOrder = "DESC",
-  }) {
+  }, isExport = false) { // 💡 أضفنا البارامتر الثاني هنا
     const queryParams = [];
     const queryParamsCount = [];
     const conditions = [];
@@ -157,11 +157,14 @@ const Media = {
     const limitNum = Number(limit);
     const offset = (Number(page) - 1) * limitNum;
 
-    queryParams.push(limitNum);
-    queryParams.push(offset);
+    // 💡 إذا كان تصدير، نلغي الـ LIMIT والـ OFFSET تماماً لجلب كل البيانات الفلاتر
+    const border = isExport ? "" : `LIMIT $${queryParams.length + 1}`;
+    const skip = isExport ? "" : `OFFSET $${queryParams.length + 2}`;
 
-    const border = `LIMIT $${queryParams.length - 1}`;
-    const skip = `OFFSET $${queryParams.length}`;
+    if (!isExport) {
+      queryParams.push(limitNum);
+      queryParams.push(offset);
+    }
 
     const allowedColumns = {
       title: "medias.title",

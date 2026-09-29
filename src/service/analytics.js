@@ -56,18 +56,22 @@ const Analytics = {
     },
 
     // 4. Medias Analytics (Paginated)
-    async getNotReadyMedias({ page = 1, limit = 20 }) {
+    async getNotReadyMedias({ page = 1, limit = 20 }, isExport = false) {
         const parsedPage = Math.max(1, parseInt(page, 10) || 1);
         const parsedLimit = Math.max(1, parseInt(limit, 10) || 20);
         const offset = (parsedPage - 1) * parsedLimit;
+
+        // إلغاء الـ LIMIT والـ OFFSET تماماً في حالة طلب التصدير
+        const limitClause = isExport ? "" : `LIMIT $1 OFFSET $2`;
+        const queryParams = isExport ? [] : [parsedLimit, offset];
 
         const result = await pool.query(
             `SELECT *, COUNT(*) OVER()::integer AS full_count 
             FROM medias 
             WHERE is_ready = false 
             ORDER BY created_at DESC
-            LIMIT $1 OFFSET $2`,
-            [parsedLimit, offset],
+            ${limitClause}`,
+            queryParams,
         );
 
         const total = result.rows[0]?.full_count || 0;
@@ -85,7 +89,7 @@ const Analytics = {
     },
 
     // 5. Broken Links Analytics (Paginated)
-    async getBrokenLinks({ serverName, page = 1, limit = 20 }) {
+    async getBrokenLinks({ serverName, page = 1, limit = 20 }, isExport = false) {
         if (!serverName) {
             const err = new Error("Server Name required!");
             err.statusCode = 400;
@@ -94,6 +98,10 @@ const Analytics = {
         const parsedPage = Math.max(1, parseInt(page, 10) || 1);
         const parsedLimit = Math.max(1, parseInt(limit, 10) || 20);
         const offset = (parsedPage - 1) * parsedLimit;
+
+        // إلغاء الـ LIMIT والـ OFFSET تماماً في حالة طلب التصدير
+        const limitClause = isExport ? "" : `LIMIT $2 OFFSET $3`;
+        const queryParams = isExport ? [serverName] : [serverName, parsedLimit, offset];
 
         const result = await pool.query(
             `SELECT 
@@ -120,8 +128,8 @@ const Analytics = {
         WHERE links.last_check_status = 'broken'
         AND links.server_name = $1
         ORDER BY links.last_check_at DESC
-        LIMIT $2 OFFSET $3`,
-            [serverName, parsedLimit, offset],
+        ${limitClause}`,
+            queryParams,
         );
 
         const total = result.rows[0]?.full_count || 0;
@@ -139,10 +147,14 @@ const Analytics = {
     },
 
     // 6. Missing Episodes Analytics (Paginated)
-    async getMissingEpisodesByServer({ serverName, page = 1, limit = 20 }) {
+    async getMissingEpisodesByServer({ serverName, page = 1, limit = 20 }, isExport = false) {
         const parsedPage = Math.max(1, parseInt(page, 10) || 1);
         const parsedLimit = Math.max(1, parseInt(limit, 10) || 20);
         const offset = (parsedPage - 1) * parsedLimit;
+
+        // إلغاء الـ LIMIT والـ OFFSET تماماً في حالة طلب التصدير
+        const limitClause = isExport ? "" : `LIMIT $2 OFFSET $3`;
+        const queryParams = isExport ? [serverName] : [serverName, parsedLimit, offset];
 
         const result = await pool.query(
             `SELECT 
@@ -159,8 +171,8 @@ const Analytics = {
                 SELECT DISTINCT episode_id FROM links WHERE LOWER(server_name) = LOWER($1)
             )
             ORDER BY episodes.id ASC
-            LIMIT $2 OFFSET $3`,
-            [serverName, parsedLimit, offset],
+            ${limitClause}`,
+            queryParams,
         );
 
         const total = result.rows[0]?.full_count || 0;
@@ -178,7 +190,7 @@ const Analytics = {
     },
 
     // 7. Locked Telegram Links Analytics (Paginated)
-    async getLockedTelegramLinks({ page = 1, limit = 20 }) {
+    async getLockedTelegramLinks({ page = 1, limit = 20 }, isExport = false) {
         const parsedPage = Math.max(1, parseInt(page, 10) || 1);
         const parsedLimit = Math.max(1, parseInt(limit, 10) || 20);
         const offset = (parsedPage - 1) * parsedLimit;

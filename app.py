@@ -18,7 +18,7 @@ import gradio as gr
 from fastapi import Request, Response
 from fastapi.routing import APIRoute
 from fastapi.responses import JSONResponse
-
+from starlette.types import ASGIApp, Receive, Scope, Send
 
 BACKEND_DIR = "."
 INTERNAL_PORT = 3000
@@ -61,8 +61,7 @@ fastapi_app, local_url, share_url = demo.launch(
 )
 
 
-# ← وحط ده بدلهم
-from starlette.types import ASGIApp, Receive, Scope, Send
+
 
 class PassthroughCORSMiddleware:
     def __init__(self, app: ASGIApp):

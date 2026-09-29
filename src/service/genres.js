@@ -20,11 +20,8 @@ const Genres = {
             `INSERT INTO genres (${columns}) VALUES (${idx}) RETURNING *`,
             values
         );
-
         return result.rows[0] || null;
     },
-
-
     async updateGenreById(id, data = {}) {
         if (!id || !Number.isInteger(id) || id <= 0) {
             const err = new Error("Id Not Valid or Not Provided!");

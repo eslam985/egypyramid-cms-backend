@@ -1,5 +1,6 @@
 
 const DownLoadTask = require("../../service/downloadTasks");
+const { convertToCSV } = require("../../utils/csv");
 
 // createTask(data)
 const handleCreateTask = async (req, res, next) => {
@@ -38,18 +39,33 @@ const handleUpdateTaskById = async (req, res, next) => {
 
 // getAllTasks({order, page = 1, limit = 20, search})
 const handleGetAllTasks = async (req, res, next) => {
-    try {
-        const result = await DownLoadTask.getAllTasks(req.query);
+  try {
+    // 1. فحص طلب التصدير
+    const isExport = req.query.export === 'true';
 
-        return res.status(200).json({
-            success: true,
-            message: `Found ${result.data.length} task(s) (Total: ${result.pagination.total})`,
-            ...result
-        });
-    } catch (err) {
-        next(err);
+    // 2. تمرير الـ isExport كبارامتر ثانٍ للسيرفيس
+    const result = await DownLoadTask.getAllTasks(req.query, isExport);
+
+    // 3. إذا كان تصدير، نرسل البيانات كملف CSV فوراً مع الفلاتر المطبقة
+    if (isExport) {
+      res.setHeader("Content-Disposition", 'attachment; filename="download-tasks-export.csv"');
+      res.setHeader("Content-Type", "text/csv");
+      
+      const csvData = convertToCSV(result.data);
+      return res.status(200).send(csvData);
     }
+
+    // 4. الرد الطبيعي المعتاد بالـ JSON والبجنيشن
+    return res.status(200).json({
+      success: true,
+      message: `Found ${result.data.length} Task(s)`,
+      ...result
+    });
+  } catch (err) {
+    next(err);
+  }
 };
+
 
 //  findByTaskId(id)
 const handleGetTaskById = async (req, res, next) => {

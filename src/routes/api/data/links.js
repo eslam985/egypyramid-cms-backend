@@ -13,11 +13,14 @@ const {
 	handleFindLinkByEpisodeId,
 	handleDeleteLinkById,
     handleFindLinkById,
+    handleFindAllLinks
 } = require("../../../controllers/items/linksController");
 
 // GET & POST /api/links/episode/:episode_id
 router.get("/episode/:episode_id", validateRequest(createIdParamSchema("episode_id")), handleFindLinkByEpisodeId);
 router.post("/episode/:episode_id", validateRequest(createLinkSchema), handleCreateLink);
+
+router.get("/", handleFindAllLinks);
 
 // Single Item Links: /api/links/:id
 router.patch("/:id", validateRequest(updateLinkByIdSchema), handleUpdateLinkById);

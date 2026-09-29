@@ -64,7 +64,39 @@ const Link = {
         )
 
         return result.rows[0] || null
-    }
+    },
+    async findAllLinks({ page = 1, limit = 20, sortBy = "created_at", sortOrder = "DESC" } = {}, isExport = false) {
+        const queryParams = [];
+        
+        // إلغاء الـ LIMIT والـ OFFSET لو كان الطلب تصدير (Export)
+        const border = isExport ? "" : `LIMIT $1`;
+        const skip = isExport ? "" : `OFFSET $2`;
+
+        if (!isExport) {
+            const limitNum = Number(limit);
+            const offset = (Number(page) - 1) * limitNum;
+            queryParams.push(limitNum, offset);
+        }
+
+        const allowedColumns = {
+            quality: "links.quality",
+            server: "links.server",
+            created_at: "links.created_at",
+        };
+        const orderByColumn = allowedColumns[sortBy] || "links.created_at";
+        const orderDirection = String(sortOrder).toUpperCase() === "ASC" ? "ASC" : "DESC";
+
+        const linksResult = await pool.query(
+            `SELECT * FROM links
+            ORDER BY ${orderByColumn} ${orderDirection}
+            ${border}
+            ${skip}`,
+            queryParams
+        );
+
+        return linksResult.rows;
+    },
+
 };
 
 module.exports = Link;

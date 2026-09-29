@@ -1,4 +1,5 @@
 const Genre = require("../../service/genres");
+const { convertToCSV } = require("../../utils/csv");
 
 // createGenre(data = {}) // // result.rows[0] || null;
 const handleCreateGenre = async (req, res, next) => {
@@ -41,13 +42,26 @@ const handleUpdateGenreById = async (req, res, next) => {
 // findAllGenres() // result.rows;
 const handleFindAllGenres = async (req, res, next) => {
     try {
-        const result = await Genre.findAllGenres();
+        // 1. فحص هل الفرونت إند يطلب التصدير كـ CSV
+        const isExport = req.query.export === 'true';
 
-        // برجع 200 دائماً مع المصفوفة سواء فيها عناصر أو فاضية
+        // 2. استدعاء الدالة الحالية كما هي بدون أي تغيير
+        const genres = await Genres.findAllGenres();
+
+        // 3. إذا كان تصدير، نرسل البيانات كملف CSV فوراً
+        if (isExport) {
+            res.setHeader("Content-Disposition", 'attachment; filename="genres-export.csv"');
+            res.setHeader("Content-Type", "text/csv");
+            
+            const csvData = convertToCSV(genres);
+            return res.status(200).send(csvData);
+        }
+
+        // 4. الرد الطبيعي المعتاد في مشروعك
         return res.status(200).json({
             success: true,
-            message: `Found ${result.length} Genre(s)`,
-            data: result
+            message: `Found ${genres.length} Genre(s) successfully`,
+            data: genres
         });
     } catch (err) {
         next(err);

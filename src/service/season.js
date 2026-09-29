@@ -52,6 +52,46 @@ const Season = {
 
         return result.rows[0] || null;
     },
+
+        // 💡 دالة جديدة لجلب كل المواسم ودعم التصدير والـ Pagination
+    async findAllSeasons({ page = 1, limit = 20, sortBy = "created_at", sortOrder = "DESC" } = {}, isExport = false) {
+        const queryParams = [];
+        
+        // إلغاء الـ LIMIT والـ OFFSET لو كان الطلب تصدير (Export)
+        const border = isExport ? "" : `LIMIT $1`;
+        const skip = isExport ? "" : `OFFSET $2`;
+
+        if (!isExport) {
+            const limitNum = Number(limit);
+            const offset = (Number(page) - 1) * limitNum;
+            queryParams.push(limitNum, offset);
+        }
+
+        const allowedColumns = {
+            season_number: "seasons.season_number",
+            created_at: "seasons.created_at",
+        };
+        const orderByColumn = allowedColumns[sortBy] || "seasons.created_at";
+        const orderDirection = String(sortOrder).toUpperCase() === "ASC" ? "ASC" : "DESC";
+
+        // استعلام جلب البيانات مع حساب عدد الحلقات لكل موسم ديناميكياً
+        const seasonsResult = await pool.query(
+            `SELECT 
+                seasons.*,
+                COUNT(episodes.id)::integer AS episodes_count
+            FROM seasons
+            LEFT JOIN episodes ON episodes.season_id = seasons.id
+            GROUP BY seasons.id
+            ORDER BY ${orderByColumn} ${orderDirection}
+            ${border}
+            ${skip}`,
+            queryParams
+        );
+
+        return seasonsResult.rows;
+    },
+
+
 };
 
 module.exports = Season;

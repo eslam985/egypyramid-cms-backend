@@ -20,6 +20,7 @@ const {
     handleFindEpisodesByMediaId,
     handleFindEpisodeById,
     handleDeleteEpisodeById,
+    handleFindAllEpisodes
 } = require("../../../controllers/items/episodesController");
 
 // --- 2. Episodes Routes ---
@@ -30,6 +31,10 @@ router.post("/media/:media_id", validateRequest(createEpisodeSchema), handleCrea
 
 // /api/medias/seasons/:season_id/episodes
 router.get("/season/:season_id", validateRequest(createIdParamSchema("season_id")), handleFindEpisodesBySeasonId);
+
+// 💡 تم وضع الروت هنا لحمايته ومنع تعارضه مع الـ :id
+// جلب كل الحلقات وتصديرها (متاح عبر /api/episodes)
+router.get("/", handleFindAllEpisodes);
 
 // Single Item Episodes
 // /api/medias/episodes/:id

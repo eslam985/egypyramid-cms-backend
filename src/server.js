@@ -60,6 +60,7 @@ app.use("/api/medias", require("./routes/api/data/medias.js"));
 app.use("/api/seasons", require("./routes/api/data/seasons.js"));
 app.use("/api/episodes", require("./routes/api/data/episodes.js"));
 app.use("/api/links", require("./routes/api/data/links.js"));
+app.use("/api/backup", require("./routes/api/data/backup.js"));
 
 // handle NOT FOUND route
 app.use(notFound);

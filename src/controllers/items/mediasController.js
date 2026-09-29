@@ -1,5 +1,6 @@
 // /egyPyramidDashbord/backend/controllers/items/mediasController.js
 const Media = require("../../service/media.js");
+const { convertToCSV } = require("../../utils/csv");
 
 const handleCreateMedia = async (req, res, next) => {
     try {
@@ -43,8 +44,23 @@ const handleUpdateMedia = async (req, res, next) => {
 // findAllMedia({category, page = 1, limit = 20, search})
 const handleFindAllMedia = async (req, res, next) => {
     try {
-        const result = await Media.findAllMedia(req.query);
+        // 1. فحص هل الفرونت إند يطلب تصدير البيانات
+        const isExport = req.query.export === 'true';
+
+        // 2. تمرير الـ isExport كبارامتر ثانٍ للسيرفيس
+        const result = await Media.findAllMedia(req.query, isExport);
         
+        // 3. إذا كان تصدير، نرسل البيانات كملف CSV فوراً
+        if (isExport) {
+            res.setHeader("Content-Disposition", 'attachment; filename="medias-export.csv"');
+            res.setHeader("Content-Type", "text/csv");
+            
+            // دالة افتراضية لتحويل المصفوفة لـ CSV (يمكنك كتابتها في الـ utils لاحقاً)
+            const csvData = convertToCSV(result.data); 
+            return res.status(200).send(csvData);
+        }
+
+        // 4. الرد الطبيعي المعتاد في مشروعك لو كان ريكويست عادي للجدول
         return res.status(200).json({
             success: true,
             message: `Found ${result.data.length} Media(s)`,
@@ -54,6 +70,7 @@ const handleFindAllMedia = async (req, res, next) => {
         next(err);
     }
 };
+
 
 // findMediaById(mediaId)
 const handleFindMediaById = async (req, res, next) => {

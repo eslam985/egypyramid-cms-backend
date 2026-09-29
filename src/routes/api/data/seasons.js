@@ -16,6 +16,7 @@ const {
     handleFindSeasonById,
     handleFindSeasonsByMediaId,
     handleDeleteSeasonById,
+    handleFindAllSeasons
 } = require("../../../controllers/items/seasonsController");
 // /api/seasons"
 
@@ -23,9 +24,13 @@ const {
 router.get("/media/:media_id", validateRequest(createIdParamSchema("media_id")), handleFindSeasonsByMediaId);
 router.post("/media/:media_id", validateRequest(createSeasonSchema), handleCreateSeason);
 
+
+router.get("/", handleFindAllSeasons);
+
 // Single Item Seasons: /api/seasons/:id
 router.get("/:id", validateRequest(createIdParamSchema()), handleFindSeasonById);
 router.patch("/:id", validateRequest(updateSeasonSchema), handleUpdateSeason);
 router.delete("/:id", validateRequest(createIdParamSchema()), handleDeleteSeasonById);
 
 module.exports = router;
+

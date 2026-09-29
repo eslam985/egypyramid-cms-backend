@@ -1,4 +1,5 @@
 const Link = require("../../service/link");
+const { convertToCSV } = require("../../utils/csv");
 
 // createLink(episode_id, data = {})
 const handleCreateLink = async (req, res, next) => {
@@ -89,10 +90,35 @@ const handleFindLinkById = async (req, res, next) => {
 		next(err);
 	}
 };
+
+const handleFindAllLinks = async (req, res, next) => {
+    try {
+        const isExport = req.query.export === 'true';
+        const links = await Link.findAllLinks(req.query, isExport);
+        
+        if (isExport) {
+            res.setHeader("Content-Disposition", 'attachment; filename="links-export.csv"');
+            res.setHeader("Content-Type", "text/csv");
+            
+            const csvData = convertToCSV(links); 
+            return res.status(200).send(csvData);
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: `Found ${links.length} Link(s)`,
+            data: links
+        });
+    } catch (err) {
+        next(err);
+    }
+};
+
 module.exports = {
 	handleCreateLink,
 	handleUpdateLinkById,
 	handleFindLinkByEpisodeId,
 	handleDeleteLinkById,
-    handleFindLinkById
+  handleFindLinkById,
+  handleFindAllLinks
 }

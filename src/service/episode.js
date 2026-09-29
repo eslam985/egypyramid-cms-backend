@@ -123,6 +123,44 @@ const Episode = {
 
         return result.rowCount
     },
+
+        // 💡 دالة جديدة لجلب كل الحلقات في النظام ودعم التصدير والـ Pagination
+    async findAllEpisodes({ page = 1, limit = 20, sortBy = "created_at", sortOrder = "DESC" } = {}, isExport = false) {
+        const queryParams = [];
+        
+        // إلغاء الـ LIMIT والـ OFFSET تماماً إذا كان طلب تصدير (Export)
+        const border = isExport ? "" : `LIMIT $1`;
+        const skip = isExport ? "" : `OFFSET $2`;
+
+        if (!isExport) {
+            const limitNum = Number(limit);
+            const offset = (Number(page) - 1) * limitNum;
+            queryParams.push(limitNum, offset);
+        }
+
+        const allowedColumns = {
+            episode_number: "e.episode_number",
+            created_at: "e.created_at",
+            media_id: "e.media_id",
+        };
+        const orderByColumn = allowedColumns[sortBy] || "e.created_at";
+        const orderDirection = String(sortOrder).toUpperCase() === "ASC" ? "ASC" : "DESC";
+
+        // استعلام شامل يجلب الحلقات مع حساب عدد الروابط لكل حلقة ديناميكياً
+        const episodesResult = await pool.query(
+            `SELECT 
+                e.*, 
+                (SELECT COUNT(*)::int FROM links l WHERE l.episode_id = e.id) AS links_count
+            FROM episodes e
+            ORDER BY ${orderByColumn} ${orderDirection}
+            ${border}
+            ${skip}`,
+            queryParams
+        );
+
+        return episodesResult.rows;
+    },
+
 };
 
 module.exports = Episode;

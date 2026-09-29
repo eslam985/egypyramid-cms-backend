@@ -1,4 +1,5 @@
 const Episode = require("../../service/episode.js");
+const { convertToCSV } = require("../../utils/csv");
 
 // createEpisode({ media_id, season_id = null, episode_number = 1 })
 // handleCreateEpisode
@@ -133,6 +134,35 @@ const handleDeleteEpisodeById = async (req, res, next) => {
     }
 };
 
+
+const handleFindAllEpisodes = async (req, res, next) => {
+    try {
+        // 1. فحص هل الريكويست يطلب تصدير البيانات (Export)
+        const isExport = req.query.export === 'true';
+
+        // 2. استدعاء السيرفيس وتمرير الـ query والـ isExport
+        const episodes = await Episode.findAllEpisodes(req.query, isExport);
+        
+        // 3. إذا كان تصدير، نرسل البيانات كملف CSV فوراً
+        if (isExport) {
+            res.setHeader("Content-Disposition", 'attachment; filename="episodes-export.csv"');
+            res.setHeader("Content-Type", "text/csv");
+            
+            const csvData = convertToCSV(episodes); 
+            return res.status(200).send(csvData);
+        }
+
+        // 4. الرد الطبيعي المعتاد في مشروعك لو كان ريكويست عادي للجدول
+        return res.status(200).json({
+            success: true,
+            message: `Found ${episodes.length} Episode(s)`,
+            data: episodes
+        });
+    } catch (err) {
+        next(err);
+    }
+};
+
 module.exports = {
     handleCreateEpisode,
     handleUpdateEpisodeById,
@@ -140,4 +170,5 @@ module.exports = {
     handleFindEpisodesByMediaId,
     handleFindEpisodeById,
     handleDeleteEpisodeById,
+    handleFindAllEpisodes
 };

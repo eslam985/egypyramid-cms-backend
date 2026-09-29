@@ -1,4 +1,5 @@
 const Season = require("../../service/season.js");
+const { convertToCSV } = require("../../utils/csv");
 
 //  createSeason(media_id, season_number)
 const handleCreateSeason = async (req, res, next) => {
@@ -103,10 +104,39 @@ const handleDeleteSeasonById = async (req, res, next) => {
     }
 };
 
+const handleFindAllSeasons = async (req, res, next) => {
+    try {
+        // 1. فحص هل الريكويست يطلب تصدير البيانات (Export)
+        const isExport = req.query.export === 'true';
+
+        // 2. استدعاء السيرفيس وتمرير الـ query والـ isExport
+        const seasons = await Season.findAllSeasons(req.query, isExport);
+        
+        // 3. إذا كان تصدير، نرسل البيانات كملف CSV فوراً
+        if (isExport) {
+            res.setHeader("Content-Disposition", 'attachment; filename="seasons-export.csv"');
+            res.setHeader("Content-Type", "text/csv");
+            
+            const csvData = convertToCSV(seasons); 
+            return res.status(200).send(csvData);
+        }
+
+        // 4. الرد الطبيعي المعتاد في مشروعك لو كان ريكويست عادي للجدول
+        return res.status(200).json({
+            success: true,
+            message: `Found ${seasons.length} Season(s)`,
+            data: seasons
+        });
+    } catch (err) {
+        next(err);
+    }
+};
+
 module.exports = {
     handleCreateSeason,
     handleUpdateSeason,
     handleFindSeasonById,
     handleFindSeasonsByMediaId,
     handleDeleteSeasonById,
+    handleFindAllSeasons
 };

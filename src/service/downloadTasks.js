@@ -39,7 +39,7 @@ const DownLoadTask = {
     return result.rows[0] || null;
   },
 
-async getAllTasks({ order = "DESC", page = 1, limit = 20, search, status } = {}) {
+async getAllTasks({ order = "DESC", page = 1, limit = 20, search, status } = {}, isExport = false) {
     const ordering = order === "ASC" ? "ASC" : "DESC";
 
     const queryParams = [];
@@ -67,11 +67,14 @@ async getAllTasks({ order = "DESC", page = 1, limit = 20, search, status } = {})
     const pageNum = parseInt(page);
     const offset = (pageNum - 1) * limitNum;
 
-    queryParams.push(limitNum);
-    queryParams.push(offset);
+    // 💡 إلغاء الـ LIMIT والـ OFFSET تماماً في حالة طلب التصدير
+    const limitClause = isExport ? "" : `LIMIT $${queryParams.length + 1}`;
+    const offsetClause = isExport ? "" : `OFFSET $${queryParams.length + 2}`;
 
-    const limitClause = `LIMIT $${queryParams.length - 1}`;
-    const offsetClause = `OFFSET $${queryParams.length}`;
+    if (!isExport) {
+      queryParams.push(limitNum);
+      queryParams.push(offset);
+    }
 
     const [tasksResult, totalResult] = await Promise.all([
       pool.query(

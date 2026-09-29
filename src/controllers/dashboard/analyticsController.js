@@ -1,5 +1,6 @@
 // /backend/controllers/dashboard/analyticsController.js
 const Analytics = require("../../service/analytics.js");
+const { convertToCSV } = require("../../utils/csv");
 
 // 1. general
 // getSystemCounters()
@@ -37,7 +38,14 @@ const handleGetTotalBrokenAndValidAndPendingLinks = async (req, res, next) => {
 // getLockedTelegramLinks({ page = 1, limit = 20 })
 const handleGetLockedTelegramLinks = async (req, res, next) => {
     try {
-        const result = await Analytics.getLockedTelegramLinks(req.query);
+        const isExport = req.query.export === 'true';
+        const result = await Analytics.getLockedTelegramLinks(req.query, isExport);
+
+        if (isExport) {
+            res.setHeader("Content-Disposition", 'attachment; filename="locked-telegram-links.csv"');
+            res.setHeader("Content-Type", "text/csv");
+            return res.status(200).send(convertToCSV(result.data));
+        }
 
         return res.status(200).json({
             success: true,
@@ -52,7 +60,15 @@ const handleGetLockedTelegramLinks = async (req, res, next) => {
 // getBrokenLinks({ page = 1, limit = 20 })
 const handleGetBrokenLinks = async (req, res, next) => {
     try {
-        const result = await Analytics.getBrokenLinks(req.query);
+        const isExport = req.query.export === 'true';
+        const result = await Analytics.getBrokenLinks(req.query, isExport);
+
+        if (isExport) {
+            const server = req.query.serverName || 'server';
+            res.setHeader("Content-Disposition", `attachment; filename="broken-links-${server}.csv"`);
+            res.setHeader("Content-Type", "text/csv");
+            return res.status(200).send(convertToCSV(result.data));
+        }
 
         return res.status(200).json({
             success: true,
@@ -69,7 +85,15 @@ const handleGetBrokenLinks = async (req, res, next) => {
 // getMissingEpisodesByServer({serverName, page = 1, limit = 20 })
 const handleGetMissingEpisodesByServer = async (req, res, next) => {
     try {
-        const result = await Analytics.getMissingEpisodesByServer(req.query);
+        const isExport = req.query.export === 'true';
+        const result = await Analytics.getMissingEpisodesByServer(req.query, isExport);
+
+        if (isExport) {
+            const server = req.query.serverName || 'server';
+            res.setHeader("Content-Disposition", `attachment; filename="missing-episodes-${server}.csv"`);
+            res.setHeader("Content-Type", "text/csv");
+            return res.status(200).send(convertToCSV(result.data));
+        }
 
         return res.status(200).json({
             success: true,
@@ -82,11 +106,19 @@ const handleGetMissingEpisodesByServer = async (req, res, next) => {
 };
 
 
+
 // 5. Medias Analytics
 // getNotReadyMedias({ page = 1, limit = 20 })
 const handleGetNotReadyMedias = async (req, res, next) => {
     try {
-        const result = await Analytics.getNotReadyMedias(req.query);
+        const isExport = req.query.export === 'true';
+        const result = await Analytics.getNotReadyMedias(req.query, isExport);
+
+        if (isExport) {
+            res.setHeader("Content-Disposition", 'attachment; filename="not-ready-medias.csv"');
+            res.setHeader("Content-Type", "text/csv");
+            return res.status(200).send(convertToCSV(result.data));
+        }
 
         return res.status(200).json({
             success: true,
@@ -97,6 +129,7 @@ const handleGetNotReadyMedias = async (req, res, next) => {
         next(err);
     }
 };
+
 
 module.exports = {
     handleGetSystemCounters,
