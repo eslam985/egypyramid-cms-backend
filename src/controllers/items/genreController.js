@@ -46,7 +46,7 @@ const handleFindAllGenres = async (req, res, next) => {
         const isExport = req.query.export === 'true';
 
         // 2. استدعاء الدالة الحالية كما هي بدون أي تغيير
-        const genres = await Genres.findAllGenres();
+        const genres = await Genre.findAllGenres();
 
         // 3. إذا كان تصدير، نرسل البيانات كملف CSV فوراً
         if (isExport) {
