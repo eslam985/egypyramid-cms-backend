@@ -15,21 +15,21 @@ const handleLogin = async (req, res, next) => {
 
         if (!isExistUser || !matchPas) 
             return res.status(401).json({ success: false, message: "Invalid email or password" });
-
+        console.log(isExistUser)
         // استخراج الـ IP والـ User-Agent من الـ Request
         const userAgent = req.headers["user-agent"] || "Unknown";
         const ipAddress = req.headers["x-forwarded-for"] || req.socket.remoteAddress || "Unknown";
 
         // Create JWT accessToken
         const accessToken = jwt.sign(
-            { userId: isExistUser.id},
+            { userId: isExistUser.id, roles: isExistUser.roles },
             process.env.ACCESS_TOKEN_SECRET,
             { expiresIn: "15m" },
         );
 
         // Create JWT accessToken
         const refreshToken = jwt.sign(
-            { userId: isExistUser.id },
+          { userId: isExistUser.id, roles: isExistUser.roles },
             process.env.REFRESH_TOKEN_SECRET,
             { expiresIn: "7d" },
         );

@@ -13,8 +13,16 @@ const verifyJWT = (req, res, next) => {
         if (err) 
             return res.status(403).json({ success: false, message: "Forbidden: Invalid or expired access token" });
         
+        // داخل verifyJWT.js
         req.userId = decoded.userId;
+
+        // إذا كانت القيمة صالحة حولها لرقم، وإلا ضع 0 أو احذفها لحظر الريكويست بأمان
+        req.roles = parseInt(decoded.roles) || null; 
+
+        console.log("User ID:", req.userId);
+        console.log("User Role:", req.roles); // سيطبع لك الرقم الصحيح الآن (مثل 2001 أو 5150)
         next();
+
     });
 };
 

@@ -43,7 +43,7 @@ const User = {
   async findUserById(userId) {
     const result = await pool.query(
       `SELECT 
-        id, username, email, created_at, updated_at, avatar_url, avatar_history
+        id, username, email, created_at, updated_at, avatar_url, avatar_history, roles
       FROM users 
       WHERE id = $1`,
       [userId],
@@ -64,7 +64,7 @@ const User = {
   async findByEmail(email) {
     const result = await pool.query(
       `SELECT 
-        id, username, email, password, created_at, updated_at, avatar_url, avatar_history 
+        id, username, email, password, created_at, updated_at, avatar_url, avatar_history, roles 
       FROM users 
       WHERE email = $1`,
       [email],
@@ -126,7 +126,7 @@ const User = {
   async findByRefreshToken(token) {
     const result = await pool.query(
       `SELECT 
-        u.id, u.username, u.email, u.password, s.refresh_token as refreshtoken 
+        u.id, u.username, u.email, u.password, s.refresh_token as refreshtoken, u.roles
       FROM sessions s
       JOIN users u ON s.user_id = u.id
       WHERE s.refresh_token = $1 AND s.expires_at > NOW()`,

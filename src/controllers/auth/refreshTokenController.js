@@ -45,7 +45,7 @@ const handleRefreshToken = async (req, res, next) => {
 
         // إنشاء Access Token جديد
         const accessToken = jwt.sign(
-            { userId: foundUser.id },
+            { userId: foundUser.id, roles: foundUser.roles },
             process.env.ACCESS_TOKEN_SECRET,
             { expiresIn: "15m" },
         );
