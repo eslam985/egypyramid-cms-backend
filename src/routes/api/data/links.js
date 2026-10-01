@@ -12,8 +12,8 @@ const {
 	handleUpdateLinkById,
 	handleFindLinkByEpisodeId,
 	handleDeleteLinkById,
-    handleFindLinkById,
-    handleFindAllLinks
+  handleFindLinkById,
+  handleFindAllLinks
 } = require("../../../controllers/items/linksController");
 
 // GET & POST /api/links/episode/:episode_id

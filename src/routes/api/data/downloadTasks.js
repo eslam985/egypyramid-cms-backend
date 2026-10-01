@@ -28,6 +28,6 @@ router.delete("/failed", handleDeleteAllTasksFailed)
 router.patch("/:id", validateRequest(UpdateTaskByIdSchema), handleUpdateTaskById);
 router.get("/:id", validateRequest(createIdParamSchema()), handleGetTaskById);
 router.delete("/:id", validateRequest(createIdParamSchema()), handleDeleteTaskById);
-router.delete("/", validateRequest(deleteManyIdsSchema), handleDeleteTasksByIds); // دي الجديدة
+router.delete("/", validateRequest(deleteManyIdsSchema), handleDeleteTasksByIds);
 
 module.exports = router;
