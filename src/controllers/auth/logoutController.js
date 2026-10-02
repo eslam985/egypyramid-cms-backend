@@ -1,5 +1,6 @@
 // /backend/controllers/auth/logoutController.js
 const User = require("../../service/userService.js");
+const cookieOptions = require("../../config/cookieOptions.js");
 
 const handleLogout = async (req, res, next) => {
     try {
@@ -10,13 +11,6 @@ const handleLogout = async (req, res, next) => {
         
         // التحقق من وجود المستخدم والجلسة بناءً على التوكن
         const isExistUser = await User.findByRefreshToken(refreshToken);
-
-        const isProduction = process.env.NODE_ENV === "production";
-        const cookieOptions = {
-            httpOnly: true,
-            sameSite: isProduction ? "None" : "Lax",
-            secure: isProduction,
-        };
 
         // لو التوكن غير موجود في الداتا بيز امسح الكوكي وخلاص
         if (!isExistUser) {

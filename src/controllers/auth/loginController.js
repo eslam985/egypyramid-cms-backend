@@ -1,7 +1,7 @@
 const bcrypt = require("bcrypt");
 const User = require("../../service/userService.js");
 const jwt = require("jsonwebtoken");
-const { date } = require("zod");
+const cookieOptions = require("../../config/cookieOptions.js");
 
 const handleLogin = async (req, res, next) => {
     try {
@@ -35,13 +35,10 @@ const handleLogin = async (req, res, next) => {
         );
 
         // save refreshToken in cookie
-        // res.cookie("jwt", refreshToken, {
-        //     httpOnly: true,
-        //     sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
-        //     secure: process.env.NODE_ENV === "production",
-        //     maxAge: 7 * 24 * 60 * 60 * 1000,
-        // });
-
+        res.cookie("jwt", refreshToken, {
+            ...cookieOptions,
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+        });
 
         // حفظ الجلسة مع الـ IP والـ User-Agent في قاعدة البيانات
         await User.createSession(isExistUser.id, refreshToken, userAgent, ipAddress);
@@ -52,7 +49,6 @@ const handleLogin = async (req, res, next) => {
             message: "Login successful",
             data: {
                 accessToken,
-                refreshToken,  // ← أضفه هنا
             }
         });
     } catch (err) {

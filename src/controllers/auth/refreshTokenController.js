@@ -1,19 +1,12 @@
 ///backend/controllers/auth/refreshTokenController.js
 const User = require("../../service/userService.js");
 const jwt = require("jsonwebtoken");
+const cookieOptions = require("../../config/cookieOptions.js");
 
 const handleRefreshToken = async (req, res, next) => {
     try {
-        const authHeader = req.headers["x-refresh-token"];
-        if (!authHeader) return res.sendStatus(401);
-        const refreshToken = authHeader;
-
-        const isProduction = process.env.NODE_ENV === "production";
-        const cookieOptions = {
-            httpOnly: true,
-            sameSite: isProduction ? "None" : "Lax",
-            secure: isProduction,
-        };
+        const refreshToken = req.cookies?.jwt;
+        if (!refreshToken) return res.sendStatus(401);
 
         // البحث عن المستخدم بـ Refresh Token
         const foundUser = await User.findByRefreshToken(refreshToken);

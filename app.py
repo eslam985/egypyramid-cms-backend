@@ -148,12 +148,16 @@ async def proxy(request: Request, path_name: str):
             response_headers.update(cors_headers)
             response_headers.pop("content-encoding", None)
             response_headers.pop("transfer-encoding", None)
-            
-            return Response(
+            response_headers.pop("set-cookie", None)
+
+            resp = Response(
                 content=response.content,
                 status_code=response.status_code,
                 headers=response_headers,
             )
+            for c in response.headers.get_list("set-cookie"):
+                resp.headers.append("set-cookie", c)
+            return resp
         except Exception as e:
             last_error = e
             print(f"⚠️ Attempt {attempt+1} failed: {e}")
