@@ -4,7 +4,7 @@ const cookieOptions = {
   httpOnly: true,
   secure: isProduction,
   sameSite: "Lax",
-  path: "/api/auth", // يتبعت لـ refresh و logout بس
+  path: "/api/auth",
 };
 
 module.exports = cookieOptions;

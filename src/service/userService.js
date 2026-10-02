@@ -1,10 +1,10 @@
 const pool = require("../config/dbConn.js");
 
 const User = {
-  async createNewUser({ username, email, password }) {
+  async createNewUser({ username, email, password, roles }) {
     const result = await pool.query(
-      `INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING *`,
-      [username, email, password],
+      `INSERT INTO users (username, email, password, roles) VALUES ($1, $2, $3, $4) RETURNING *`,
+      [username, email, password, roles],
     );
     const newUser = result.rows[0];
     return {

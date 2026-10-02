@@ -2,12 +2,15 @@
 const { z } = require("zod");
 const { createIdParamSchema } = require("./IDS_schema");
 const { nameRe } = require("../../utils/regex.js");
-
+// username, email, password, roles
 const baseUserSchema = z.object({
     body: z.object({
         username: z.string().trim().min(3).max(30).regex(nameRe),
         email: z.string().trim().lowercase().email(),
-        avatar_url: z.string().url("يجب أن يكون رابط صورة صالح").nullish().or(z.literal(''))
+        avatar_url: z.string().url("يجب أن يكون رابط صورة صالح").nullish().or(z.literal('')),
+        roles: z.enum(["5150", "1984", "2001"], {
+          errorMap: () => ({ message: "roles must be only [ 5150, 1984, 2001 ]" })
+        }).default("2001").optional()
     }) 
 });
 
@@ -23,8 +26,6 @@ const updateUserByIdSchema = z.object({
         { message: "يجب إرسال حقل واحد على الأقل للتحديث" }
     )
 });
-
-
 
 
 const loginUserSchema = z.object({

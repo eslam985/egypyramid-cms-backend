@@ -15,7 +15,7 @@ const handleLogin = async (req, res, next) => {
 
         if (!isExistUser || !matchPas) 
             return res.status(401).json({ success: false, message: "Invalid email or password" });
-        console.log(isExistUser)
+
         // استخراج الـ IP والـ User-Agent من الـ Request
         const userAgent = req.headers["user-agent"] || "Unknown";
         const ipAddress = req.headers["x-forwarded-for"] || req.socket.remoteAddress || "Unknown";

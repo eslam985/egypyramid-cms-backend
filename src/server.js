@@ -44,9 +44,9 @@ app.use(express.json({ limit: "10kb" }));
 app.use(cookieParser());
 
 // public Route
+app.use("/api/auth/register", authLimiter, require("./routes/api/auth/register.js"));
 app.use("/api/auth/login", authLimiter, require("./routes/api/auth/login.js"));
-
-app.use("/api/auth/refresh", require("./routes/api/auth/refresh.js"));
+app.use("/api/auth/refresh", authLimiter, require("./routes/api/auth/refresh.js"));
 app.use("/api/auth/logout", require("./routes/api/auth/logout.js"));
 
 // Protected paths
