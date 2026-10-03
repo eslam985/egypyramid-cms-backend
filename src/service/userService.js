@@ -8,11 +8,9 @@ const User = {
     );
     const newUser = result.rows[0];
     return {
-      data: {
-        id: newUser.id,
-        username: newUser.username,
-        email: newUser.email,
-      },
+      id: newUser.id,
+      username: newUser.username,
+      email: newUser.email,
     };
   },
 

@@ -33,6 +33,14 @@ router.get(
   validateRequest(getMediasQuerySchema),
   handleFindAllMedia,
 );
+
+router.get(
+  "/export",
+  verifyRoles(ROLES_LIST.Editor),
+  validateRequest(getMediasQuerySchema),
+  handleFindAllMedia,
+);
+
 router.post(
   "/",
   verifyRoles(ROLES_LIST.Editor),

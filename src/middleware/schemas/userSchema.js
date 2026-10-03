@@ -1,39 +1,40 @@
 // /backend/middleware/schemas/userSchema.js
 const { z } = require("zod");
-const { createIdParamSchema } = require("./IDS_schema");
 const { nameRe } = require("../../utils/regex.js");
-// username, email, password, roles
-const baseUserSchema = z.object({
-    body: z.object({
-        username: z.string().trim().min(3).max(30).regex(nameRe),
-        email: z.string().trim().lowercase().email(),
-        avatar_url: z.string().url("يجب أن يكون رابط صورة صالح").nullish().or(z.literal('')),
-        roles: z.enum(["5150", "1984", "2001"], {
-          errorMap: () => ({ message: "roles must be only [ 5150, 1984, 2001 ]" })
-        }).default("2001").optional()
-    }) 
+
+// 1️⃣ نقوم بعمل كائن الحقول الأساسية مجردة تماماً (بدون كائن body خارجي)
+const userCoreShape = z.object({
+    username: z.string().trim().min(3).max(30).regex(nameRe),
+    email: z.string().trim().lowercase().email(),
+    avatar_url: z.string().url("يجب أن يكون رابط صورة صالح").nullish().or(z.literal('')),
+    roles: z.enum(["5150", "1984", "2001"], {
+      errorMap: () => ({ message: "roles must be only [ 5150, 1984, 2001 ]" })
+    }).default("2001").optional()
 });
 
+// 2️⃣ الآن ننشئ الـ createUserSchema ونمدد الحقول الأساسية ونغلفها بـ body واحدة فقط!
 const createUserSchema = z.object({
-  body: baseUserSchema.extend({
+    body: userCoreShape.extend({
         password: z.string().trim().min(6).max(100),
-  })
+    })
 });
 
+// 3️⃣ ننشئ الـ updateUserByIdSchema بشكل سليم
 const updateUserByIdSchema = z.object({
-    body: baseUserSchema.shape.body.partial().refine(
+    body: userCoreShape.partial().refine(
         (data) => Object.keys(data).length > 0, 
         { message: "يجب إرسال حقل واحد على الأقل للتحديث" }
     )
 });
 
-
+// بقية السكيمات المكتوبة عندك (loginUserSchema و changePasswordSchema إلخ) سليمة تماماً لأنها مغلفة بـ body واحدة
 const loginUserSchema = z.object({
     body: z.object({
         email: z.string().trim().lowercase().email(),
         password: z.string().trim().min(1, "كلمة المرور مطلوبة")
     })
 });
+
 
 const deleteSessionsBy_uuid = z.object({
     body: z.object({

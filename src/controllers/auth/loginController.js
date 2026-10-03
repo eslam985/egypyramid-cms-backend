@@ -49,6 +49,12 @@ const handleLogin = async (req, res, next) => {
             message: "Login successful",
             data: {
                 accessToken,
+                userId : isExistUser.id,
+                username : isExistUser.username,
+                email : isExistUser.email,
+                roles : isExistUser.roles,
+                avatar_url : isExistUser.avatar_url,
+                avatar_history: isExistUser.avatar_history
             }
         });
     } catch (err) {

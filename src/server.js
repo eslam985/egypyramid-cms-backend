@@ -44,13 +44,13 @@ app.use(express.json({ limit: "10kb" }));
 app.use(cookieParser());
 
 // public Route
-app.use("/api/auth/register", authLimiter, require("./routes/api/auth/register.js"));
 app.use("/api/auth/login", authLimiter, require("./routes/api/auth/login.js"));
-app.use("/api/auth/refresh", authLimiter, require("./routes/api/auth/refresh.js"));
+app.use("/api/auth/refresh", require("./routes/api/auth/refresh.js"));
 app.use("/api/auth/logout", require("./routes/api/auth/logout.js"));
 
 // Protected paths
 app.use(verifyJWT);
+app.use("/api/auth/register", require("./routes/api/auth/register.js"));
 app.use("/api/avatar", require("./routes/api/auth/avatar"));
 app.use("/api/user/", require("./routes/api/auth/user.js"));
 app.use("/api/analytics", require("./routes/api/data/analytics.js"));

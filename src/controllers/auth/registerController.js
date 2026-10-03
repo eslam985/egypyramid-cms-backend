@@ -9,7 +9,8 @@ const handleRegister = async (req, res, next) => {
     if (duplicate) 
       return res.status(409).json({ success: false, message: `username ${newUser?.email} Not available` });
     
-    const hashPwd = await bcrypt.hash(newUser?.password, 10);
+    let hashPwd = await bcrypt.hash(newUser?.password, 10);
+    newUser.password = hashPwd; 
 
     // create  and store the new user
     const result = await User.createNewUser(newUser)
