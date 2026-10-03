@@ -42,8 +42,7 @@ const handleChangePassword = async (req, res, next) => {
 
 const handleUpdateUserInfo = async (req, res, next) => {
   try{
-      const userId = req.userId;; // أو req.userId بناءً على ما تعينه داخل verifyJWT
-
+      const userId = req.userId; // أو req.userId بناءً على ما تعينه داخل verifyJWT
       const isExistUser = await User.findUserById(userId)
       if (!isExistUser) return res.status(404).json({ success: false, message: `Not Found User Id ${userId}` })
       
@@ -52,6 +51,11 @@ const handleUpdateUserInfo = async (req, res, next) => {
         return res.status(400).json({ 
           success: false, message: `The ID must not be sent in the body, and the password cannot be changed here!` 
         })
+
+      const roleUser = req.roles;
+      if(roleUser !== 5150 && data?.roles) {
+        data.roles = roleUser
+      }
 
       const updateUserInfo = await User.updateUserById(userId, data)
       if(!updateUserInfo) 
