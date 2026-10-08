@@ -26,6 +26,7 @@ const DownLoadTask = {
 
     return result.rows[0] || null;
   },
+  
   async updateTaskById(id, data) {
     const seter = Object.keys(data)
       .map((k, i) => `${k} = $${i + 1}`)

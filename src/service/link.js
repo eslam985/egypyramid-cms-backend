@@ -80,7 +80,7 @@ const Link = {
 
         const allowedColumns = {
             quality: "links.quality",
-            server: "links.server",
+            server_name: "links.server_name",
             created_at: "links.created_at",
         };
         const orderByColumn = allowedColumns[sortBy] || "links.created_at";

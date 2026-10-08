@@ -23,7 +23,7 @@ const Media = {
         `INSERT INTO medias (${keys.join(", ")}) VALUES (${placeholders}) RETURNING *`,
         values,
       );
-      let media = mediaRes.rows[0];
+      let media = mediaRes.rows[0] | null;
 
       // 3. تحديث الـ Slug بالـ ID النهائي
       const finalSlug = `${media.id}-${slugify(media.normalized_title)}`;
@@ -31,7 +31,7 @@ const Media = {
         `UPDATE medias SET slug = $1 WHERE id = $2 RETURNING *`,
         [finalSlug, media.id],
       );
-      media = slugRes.rows[0];
+      media = slugRes.rows[0] | null;
 
       let insertedGenres = [];
       if (Array.isArray(genres) && genres.length > 0) {
