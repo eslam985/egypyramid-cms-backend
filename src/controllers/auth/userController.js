@@ -125,7 +125,7 @@ const handleFindUserById = async (req, res, next) => {
       
       return res.status(200).json({
         success: true,
-        message: `Found User Id ${userId} successfully`,
+        message: `Found User ${isExistUser.username} successfully`,
         data: isExistUser
       });
 
