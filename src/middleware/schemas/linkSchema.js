@@ -7,7 +7,7 @@ const createLinkSchema = z.object({
     params: createIdParamSchema("episode_id").shape.params,
     body: z.object({
         server_name: z.string().trim().min(2).max(50),
-        url: z.string().trim().url(),
+        url: z.string().trim().pipe(z.url("يجب أن يكون رابط صورة صالح")),
         is_fixed: z.boolean().optional(),
         check_count: z.number().int().nonnegative().optional(),
         last_check_status: z.enum(["pending", "valid", "broken"]).optional(),

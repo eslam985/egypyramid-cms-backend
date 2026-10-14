@@ -10,7 +10,7 @@ const createMediaSchema = z.object({
         title: z.string().trim().min(3, "العنوان يجب ألا يقل عن 3 أحرف").max(100),
         year: z.string().trim().length(4),
         tmdb_id: z.string().trim().min(3).max(20).optional().nullable(),
-        poster_url: z.string().trim().url("رابط البوستر غير صالح").optional().nullable(),
+        poster_url: z.string().trim().pipe(z.url("يجب أن يكون رابط صورة صالح")).optional().nullable(),
         story: z.string().trim().min(8).max(500).optional().nullable(),
         rating: z.string().trim().min(1).max(8).optional().nullable(),
         runtime: z.string().trim().min(3).max(30).optional().nullable(),

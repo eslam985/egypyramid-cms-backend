@@ -4,8 +4,8 @@ const { createIdParamSchema } = require("./IDS_schema");
 const {searchPaginationSchema, paginationSchema} = require("./paginationSchema.js");
 
 const baseTaskSchema = z.object({
-    task_name: z.string().trim().min(2).max(50),
-    source_url: z.string().trim().url("رابط المصدر غير صحيح"),
+    task_name: z.string().trim().min(2).max(200),
+    source_url: z.string().trim().pipe(z.url('رابط المصدر غير صحيح')),
     status: z.enum(["idle", "processing", "failed"], {
         errorMap: () => ({ message: "status must be only [ idle, processing, failed ]" })
     }),
@@ -13,8 +13,8 @@ const baseTaskSchema = z.object({
     download_speed: z.string().trim(),
     status_message: z.string().trim(),
     is_cancelled: z.boolean(),
-    trailer_url: z.string().trim().url("رابط العرض غير صحيح").nullish(),
-    fallback_urls: z.array(z.string().trim().url("رابط غير صحيح")).nullable().optional()
+    trailer_url: z.string().trim().pipe(z..url("رابط العرض غير صحيح")).nullish(),
+    fallback_urls: z.array(z.string().trim().pipe(z.url("رابط غير صحيح"))).nullable().optional()
 });
 
 // سكيما إنشاء التاسك (تضيف القيم الافتراضية على الـ Base Schema)
