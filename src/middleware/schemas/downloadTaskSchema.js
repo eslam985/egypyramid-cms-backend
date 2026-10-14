@@ -13,7 +13,7 @@ const baseTaskSchema = z.object({
     download_speed: z.string().trim(),
     status_message: z.string().trim(),
     is_cancelled: z.boolean(),
-    trailer_url: z.string().trim().pipe(z..url("رابط العرض غير صحيح")).nullish(),
+    trailer_url: z.string().trim().pipe(z.url("رابط العرض غير صحيح")).nullish(),
     fallback_urls: z.array(z.string().trim().pipe(z.url("رابط غير صحيح"))).nullable().optional()
 });
 

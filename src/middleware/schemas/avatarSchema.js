@@ -15,7 +15,6 @@ const setAvatarFromHistorySchema = z.object({
       // 💡 استبدال startsWith بـ regex ليكون أكثر استقراراً وقوة
       chosenAvatarUrl: z.string({ required_error: "رابط الصورة المختارة مطلوب" })
           .trim()
-          .pipe(z.url("يجب أن يكون رابط صورة صالح"))
           .regex(/^https:\/\/res\.cloudinary\.com\//, "يجب أن تكون الصورة مرفوعة على خوادم Cloudinary الرسمية")
     })
 });
