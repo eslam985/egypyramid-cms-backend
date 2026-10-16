@@ -11,7 +11,7 @@ const verifyJWT = (req, res, next) => {
 
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
         if (err) 
-            return res.status(403).json({ success: false, message: "Forbidden: Invalid or expired access token" });
+            return res.status(401).json({ success: false, message: "Forbidden: Invalid or expired access token" });
         
         // داخل verifyJWT.js
         req.userId = decoded.userId;
