@@ -1,12 +1,10 @@
-const express = require("express");
+import express from "express";
 const router = express.Router();
 
-const { handleDownloadBackup } = require("../../../controllers/backup/backupController");
-const ROLES_LIST = require("../../../config/roles_list.js");
-const verifyRoles = require("../../../middleware/verifyRoles.js");
+import { handleDownloadBackup } from "#src/controllers/backup/backupController.js";
+import verifyRoles from "#src/middleware/verifyRoles.js";
+import ROLES_LIST from "#src/config/roles_list.js";
 
-// المسار الفعلي سيكون: /api/backup/download
-// ومحمي تلقائياً عبر الـ verifyJWT الموجود في server.js
-router.get("/download",verifyRoles(ROLES_LIST.Admin), handleDownloadBackup);
+router.get("/download", verifyRoles(ROLES_LIST.Admin), handleDownloadBackup);
 
-module.exports = router;
+export default router;

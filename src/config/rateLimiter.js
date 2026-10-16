@@ -1,4 +1,4 @@
-const rateLimit = require("express-rate-limit");
+import rateLimit from "express-rate-limit";
 
 const burstLimiter = rateLimit({
   windowMs: 1 * 1000,
@@ -36,4 +36,4 @@ const generalLimiter = rateLimit({
   skip: (req) => req.method === "OPTIONS",
 });
 
-module.exports = { authLimiter, generalLimiter, burstLimiter, healthLimiter };
+export { authLimiter, generalLimiter, burstLimiter, healthLimiter };

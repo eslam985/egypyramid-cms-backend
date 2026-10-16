@@ -28,4 +28,4 @@ const verifyRoles = (requiredRole) => {
     };
 };
 
-module.exports = verifyRoles;
+export default verifyRoles;

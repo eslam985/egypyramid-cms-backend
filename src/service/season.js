@@ -1,4 +1,4 @@
-const pool = require("../config/dbConn.js");
+import pool from "#src/config/dbConn.js";
 
 const Season = {
     async createSeason(media_id, season_number) {
@@ -94,4 +94,4 @@ const Season = {
 
 };
 
-module.exports = Season;
+export default Season;

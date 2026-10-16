@@ -1,5 +1,6 @@
-const Season = require("../../service/season.js");
-const { convertToCSV } = require("../../utils/csv");
+import convertToCSV from "#src/utils/csv.js";
+
+import Season from "#src/service/season.js";
 
 //  createSeason(media_id, season_number)
 const handleCreateSeason = async (req, res, next) => {
@@ -132,7 +133,7 @@ const handleFindAllSeasons = async (req, res, next) => {
     }
 };
 
-module.exports = {
+export {
     handleCreateSeason,
     handleUpdateSeason,
     handleFindSeasonById,

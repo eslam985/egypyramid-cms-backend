@@ -7,4 +7,4 @@ const cookieOptions = {
   path: "/api/auth", // 👈 تستطيع قصرها على مسار المصادقة فقط بأمان
 };
 
-module.exports = cookieOptions;
+export default cookieOptions;

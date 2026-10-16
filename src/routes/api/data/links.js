@@ -1,24 +1,24 @@
-const express = require("express");
+import express from "express";
 const router = express.Router();
 
-const { validateRequest } = require("../../../middleware/validation");
-const {
-  createIdParamSchema,
-} = require("../../../middleware/schemas/IDS_schema");
-const ROLES_LIST = require("../../../config/roles_list.js");
-const verifyRoles = require("../../../middleware/verifyRoles.js");
-const {
+import { validateRequest } from "#src/middleware/validation.js";
+import verifyRoles from "#src/middleware/verifyRoles.js";
+import ROLES_LIST from "#src/config/roles_list.js";
+
+import { createIdParamSchema } from "#src/middleware/schemas/IDS_schema.js";
+
+import {
   createLinkSchema,
   updateLinkByIdSchema,
-} = require("../../../middleware/schemas/linkSchema");
-const {
+} from "#src/middleware/schemas/linkSchema.ts";
+import {
   handleCreateLink,
   handleUpdateLinkById,
   handleFindLinkByEpisodeId,
   handleDeleteLinkById,
   handleFindLinkById,
   handleFindAllLinks,
-} = require("../../../controllers/items/linksController");
+} from "#src/controllers/items/linksController.js";
 
 // GET & POST /api/links/episode/:episode_id
 
@@ -60,4 +60,4 @@ router.get(
   handleFindLinkById,
 );
 
-module.exports = router;
+export default router;

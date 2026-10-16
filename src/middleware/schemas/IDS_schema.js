@@ -1,26 +1,23 @@
-// /backend/middleware/schemas/IDS_schema.js
-const { z } = require("zod");
+// /src/middleware/schemas/IDS_schema.js
+import { z } from "zod";
 
-// للـ id الواحد في الـ params /:id
 const createIdParamSchema = (paramName = "id") => {
   return z.object({
     params: z.object({
       [paramName]: z.coerce
-        .number({ invalid_type_error: `الـ ${paramName} يجب أن يكون رقماً` })
+        .number({ message: `الـ ${paramName} يجب أن يكون رقماً` })
         .int()
         .positive(`الـ ${paramName} يجب أن يكون رقماً موجباً`),
     }),
   });
 };
 
-
-// للـ bulk delete
 const deleteManyIdsSchema = z.object({
   body: z.object({
     ids: z
       .array(
         z.coerce
-          .number({ invalid_type_error: `الـ id يجب أن يكون رقماً` })
+          .number({ message: `الـ id يجب أن يكون رقماً` })
           .int()
           .positive(`الـ id يجب أن يكون رقماً موجباً`),
       )
@@ -32,4 +29,7 @@ const deleteManyIdsSchema = z.object({
   }),
 });
 
-module.exports = { createIdParamSchema, deleteManyIdsSchema };
+export { createIdParamSchema, deleteManyIdsSchema };
+
+// export type CreateIdParamType = z.infer<typeof createIdParamSchema>;
+// export type DeleteManyIdsType = z.infer<typeof deleteManyIdsSchema>;

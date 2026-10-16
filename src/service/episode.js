@@ -1,5 +1,5 @@
-const pool = require("../config/dbConn");
-const Media = require("./media.js");
+import pool from "#src/config/dbConn.js";
+import Media from "#src/service/media.js";
 
 // slug: 8359-when-calls-the-heart-episode-10
 const Episode = {
@@ -163,4 +163,4 @@ const Episode = {
 
 };
 
-module.exports = Episode;
+export default Episode;

@@ -1,5 +1,6 @@
 // backend/src/service/avatarService.js
-const pool = require('../config/dbConn');
+import pool from "#src/config/dbConn.js";
+
 
 // الرابط الثابت للصورة الافتراضية
 const DEFAULT_AVATAR = 'https://res.cloudinary.com/dbahqgo8j/image/upload/blogger/iaeclevshfanh5j6x9ew.webp';
@@ -65,4 +66,4 @@ const AvatarService = {
     }
 };
 
-module.exports = AvatarService;
+export default AvatarService;

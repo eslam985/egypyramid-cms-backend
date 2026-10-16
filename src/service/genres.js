@@ -1,5 +1,5 @@
-const pool = require("../config/dbConn.js");
-const { slugify } = require("../utils/regex")
+import { slugify } from "#src/utils/regex.js"
+import pool from "#src/config/dbConn.js";
 
 const Genres = {
     async createGenre(data = {}) {
@@ -99,4 +99,4 @@ const Genres = {
     },
 };
 
-module.exports = Genres;
+export default Genres;

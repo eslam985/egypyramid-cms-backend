@@ -1,6 +1,7 @@
 // /backend/controllers/auth/logoutController.js
-const User = require("../../service/userService.js");
-const cookieOptions = require("../../config/cookieOptions.js");
+
+import cookieOptions from "#src/config/cookieOptions.js";
+import User from "#src/service/userService.js";
 
 const handleLogout = async (req, res, next) => {
     try {
@@ -33,4 +34,4 @@ const handleLogout = async (req, res, next) => {
     }
 };
 
-module.exports = handleLogout;
+export default handleLogout;

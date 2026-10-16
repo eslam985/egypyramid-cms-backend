@@ -1,26 +1,27 @@
 // /backend/routes/api/genres.js
-const express = require("express");
+import express from "express";
 const router = express.Router();
 
-const { validateRequest } = require("../../../middleware/validation");
-const {
-  createIdParamSchema,
-} = require("../../../middleware/schemas/IDS_schema");
-const ROLES_LIST = require("../../../config/roles_list.js");
-const verifyRoles = require("../../../middleware/verifyRoles.js");
-const {
+import { validateRequest } from "#src/middleware/validation.js";
+import verifyRoles from "#src/middleware/verifyRoles.js";
+import ROLES_LIST from "#src/config/roles_list.js";
+
+import { createIdParamSchema } from "#src/middleware/schemas/IDS_schema.js";
+
+import {
   createGenreSchema,
   updateGenreByIdSchema,
   findGenreByNameSchema,
-} = require("../../../middleware/schemas/genreSchema");
-const {
+} from "#src/middleware/schemas/genreSchema.ts";
+
+import {
   handleCreateGenre,
   handleUpdateGenreById,
   handleDeleteGenreById,
   handleFindAllGenres,
   handleFindGenreById,
   handleFindGenreByName,
-} = require("../../../controllers/items/genreController");
+} from "#src/controllers/items/genreController.js";
 
 // Genre
 // /api/genres/search
@@ -64,4 +65,4 @@ router.delete(
   handleDeleteGenreById,
 );
 
-module.exports = router;
+export default router;

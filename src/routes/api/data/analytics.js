@@ -1,27 +1,26 @@
-const express = require("express");
+import express from "express";
 const router = express.Router();
 
-const { validateRequest } = require("../../../middleware/validation.js");
-const ROLES_LIST = require("../../../config/roles_list.js");
-const verifyRoles = require("../../../middleware/verifyRoles.js");
-const {
+import { validateRequest } from "#src/middleware/validation.js";
+import verifyRoles from "#src/middleware/verifyRoles.js";
+import ROLES_LIST from "#src/config/roles_list.js";
+
+import { paginationSchema } from "#src/middleware/schemas/paginationSchema.js";
+
+import {
   getTotalBrokenAndValidAndPendingLinksSchema,
   getMissingEpisodesByServerSchema,
   getBrokenLinksSchema,
-} = require("../../../middleware/schemas/analyticsSchema.js");
+} from "#src/middleware/schemas/analyticsSchema.ts";
 
-const {
-  paginationSchema,
-} = require("../../../middleware/schemas/paginationSchema.js");
-
-const {
+import {
   handleGetSystemCounters,
   handleGetTotalBrokenAndValidAndPendingLinks,
   handleGetLockedTelegramLinks,
   handleGetBrokenLinks,
   handleGetMissingEpisodesByServer,
   handleGetNotReadyMedias,
-} = require("../../../controllers/dashboard/analyticsController.js");
+} from "#src/controllers/dashboard/analyticsController.js";
 
 // 1. general
 
@@ -38,12 +37,14 @@ router.get(
   validateRequest(getTotalBrokenAndValidAndPendingLinksSchema),
   handleGetTotalBrokenAndValidAndPendingLinks,
 );
+
 router.get(
   "/links/telegram/locked",
   verifyRoles(ROLES_LIST.User),
   validateRequest(paginationSchema),
   handleGetLockedTelegramLinks,
 );
+
 router.get(
   "/links/broken",
   verifyRoles(ROLES_LIST.User),
@@ -67,4 +68,4 @@ router.get(
   handleGetNotReadyMedias,
 );
 
-module.exports = router;
+export default router;

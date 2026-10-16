@@ -1,5 +1,7 @@
-const Genre = require("../../service/genres");
-const { convertToCSV } = require("../../utils/csv");
+import convertToCSV from "#src/utils/csv.js";
+
+import Genre from "#src/service/genres.js";
+
 
 // createGenre(data = {}) // // result.rows[0] || null;
 const handleCreateGenre = async (req, res, next) => {
@@ -125,7 +127,7 @@ const handleDeleteGenreById = async (req, res, next) => {
     }
 };
 
-module.exports = {
+export {
     handleCreateGenre,
     handleUpdateGenreById,
     handleFindAllGenres,

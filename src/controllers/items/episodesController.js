@@ -1,5 +1,7 @@
-const Episode = require("../../service/episode.js");
-const { convertToCSV } = require("../../utils/csv");
+import convertToCSV from "#src/utils/csv.js";
+
+import Episode from "#src/service/episode.js";
+
 
 // createEpisode({ media_id, season_id = null, episode_number = 1 })
 // handleCreateEpisode
@@ -163,7 +165,8 @@ const handleFindAllEpisodes = async (req, res, next) => {
     }
 };
 
-module.exports = {
+
+export {
     handleCreateEpisode,
     handleUpdateEpisodeById,
     handleFindEpisodesBySeasonId,

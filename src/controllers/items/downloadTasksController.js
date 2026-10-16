@@ -1,6 +1,7 @@
 
-const DownLoadTask = require("../../service/downloadTasks");
-const { convertToCSV } = require("../../utils/csv");
+import DownLoadTask from "#src/service/downloadTasks.js";
+import convertToCSV from "#src/utils/csv.js";
+
 
 // createTask(data)
 const handleCreateTask = async (req, res, next) => {
@@ -138,7 +139,8 @@ const handleDeleteAllTasksFailed = async (req, res, next) => {
   }
 }
 
-module.exports = {
+
+export {
     handleGetAllTasks,
     handleGetTaskById,
     handleCreateTask,

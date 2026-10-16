@@ -1,11 +1,14 @@
-const User = require('../../service/userService.js');
-const bcrypt = require("bcrypt");
+import bcrypt from "bcrypt";
+
+import User from "#src/service/userService.js";
+
 
 const handleRegister = async (req, res, next) => {
   try {
     const newUser= req.body;
       
     const duplicate = await User.findByEmail(newUser?.email)
+    
     if (duplicate) 
       return res.status(409).json({ success: false, message: `username ${newUser?.email} Not available` });
     
@@ -24,4 +27,4 @@ const handleRegister = async (req, res, next) => {
   }
 };
 
-module.exports = handleRegister;
+export default handleRegister;

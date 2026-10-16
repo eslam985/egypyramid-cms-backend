@@ -1,12 +1,11 @@
-const express = require("express");
+import express from "express";
 const router = express.Router();
-const ROLES_LIST = require("../../../config/roles_list.js");
-const verifyRoles = require("../../../middleware/verifyRoles.js");
-const { validateRequest } = require("../../../middleware/validation.js");
-const handleRegister = require("../../../../src/controllers/auth/registerController.js");
-const {
-  createUserSchema,
-} = require("../../../../src/middleware/schemas/userSchema.js");
+
+import handleRegister from "#src/controllers/auth/registerController.js";
+import { createUserSchema } from "#src/middleware/schemas/userSchema.ts";
+import { validateRequest } from "#src/middleware/validation.js";
+import verifyRoles from "#src/middleware/verifyRoles.js";
+import ROLES_LIST from "#src/config/roles_list.js";
 
 router.post(
   "/",
@@ -15,4 +14,4 @@ router.post(
   handleRegister,
 );
 
-module.exports = router;
+export default router;

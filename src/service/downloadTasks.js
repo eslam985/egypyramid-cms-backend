@@ -1,4 +1,4 @@
-const pool = require("../config/dbConn.js");
+import pool from "#src/config/dbConn.js";
 
 const DownLoadTask = {
   async createTask(data = {}) {
@@ -137,4 +137,4 @@ async getAllTasks({ order = "DESC", page = 1, limit = 20, search, status } = {},
 }
 };
 
-module.exports = DownLoadTask;
+export default DownLoadTask;

@@ -1,27 +1,27 @@
-const express = require("express");
+import express from "express";
 const router = express.Router();
 
-const { validateRequest } = require("../../../middleware/validation");
-const {
-  createIdParamSchema,
-} = require("../../../middleware/schemas/IDS_schema");
-const ROLES_LIST = require("../../../config/roles_list.js");
-const verifyRoles = require("../../../middleware/verifyRoles.js");
-const {
+import { validateRequest } from "#src/middleware/validation.js";
+import verifyRoles from "#src/middleware/verifyRoles.js";
+import ROLES_LIST from "#src/config/roles_list.js";
+
+import { createIdParamSchema } from "#src/middleware/schemas/IDS_schema.js";
+
+import {
   createMediaSchema,
   updateMediaSchema,
   getMediasQuerySchema,
   getMediaByAnyId,
-} = require("../../../middleware/schemas/mediaSchema");
+} from "#src/middleware/schemas/mediaSchema.ts";
 
-const {
+import {
   handleCreateMedia,
   handleUpdateMedia,
   handleFindAllMedia,
   handleFindMediaById,
   handleDeleteMediaById,
   handleFindMediaByAnyId,
-} = require("../../../controllers/items/mediasController");
+} from "#src/controllers/items/mediasController.js";
 
 // --- 4. Media Routes ---
 // Media Collection Routes
@@ -78,4 +78,4 @@ router.delete(
   handleDeleteMediaById,
 );
 
-module.exports = router;
+export default router;

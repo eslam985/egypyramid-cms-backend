@@ -1,6 +1,7 @@
 // /egyPyramidDashbord/backend/controllers/items/mediasController.js
-const Media = require("../../service/media.js");
-const { convertToCSV } = require("../../utils/csv");
+import convertToCSV from "#src/utils/csv.js";
+
+import Media from "#src/service/media.js";
 
 const handleCreateMedia = async (req, res, next) => {
     try {
@@ -130,7 +131,7 @@ const handleDeleteMediaById = async (req, res, next) => {
     }
 };
 
-module.exports = {
+export {
     handleCreateMedia,
     handleUpdateMedia,
     handleFindAllMedia,

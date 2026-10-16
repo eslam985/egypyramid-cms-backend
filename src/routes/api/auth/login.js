@@ -1,15 +1,11 @@
-const express = require("express");
+import express from "express";
 const router = express.Router();
 
-const handleLogin = require("../../../controllers/auth/loginController.js");
-const { validateRequest } = require("../../../middleware/validation.js");
-const { loginUserSchema } = require("../../../middleware/schemas/userSchema.js");
+import { loginUserSchema } from "#src/middleware/schemas/userSchema.ts";
+import handleLogin from "#src/controllers/auth/loginController.js";
+import { validateRequest } from "#src/middleware/validation.js";
 
 // 💡 تم حذف verifyRoles لأن المستخدم لا يمتلك صلاحية قبل الـ login
-router.post(
-  "/",
-  validateRequest(loginUserSchema),
-  handleLogin,
-);
+router.post("/", validateRequest(loginUserSchema), handleLogin);
 
-module.exports = router;
+export default router;

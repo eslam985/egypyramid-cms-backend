@@ -1,10 +1,10 @@
-const pool = require("../config/dbConn.js");
+import pool from "#src/config/dbConn.js";
 
 const Analytics = {
-    // 1. General System Counters
-    async getSystemCounters() {
-        const result = await pool.query(
-            `SELECT 
+  // 1. General System Counters
+  async getSystemCounters() {
+    const result = await pool.query(
+      `SELECT 
                 (SELECT COUNT(id) FROM medias) AS total_medias,
                 (SELECT COUNT(id) FROM medias WHERE is_ready = true) AS ready_medias,
                 (SELECT COUNT(id) FROM medias WHERE is_ready = false) AS not_ready_medias,
@@ -31,18 +31,18 @@ const Analytics = {
                 (SELECT COUNT(id) FROM episodes WHERE id NOT IN (SELECT DISTINCT episode_id FROM links WHERE LOWER(server_name) = 'voe')) AS missing_voe,
                 (SELECT COUNT(id) FROM episodes WHERE id NOT IN (SELECT DISTINCT episode_id FROM links WHERE LOWER(server_name) = 'vk')) AS missing_vk,
                 (SELECT COUNT(id) FROM episodes WHERE id NOT IN (SELECT DISTINCT episode_id FROM links WHERE LOWER(server_name) = 'archive')) AS missing_archive`,
-        );
+    );
 
-        return result.rows[0] || {};
-    },
+    return result.rows[0] || {};
+  },
 
-    // 2. Links Analytics
-    async getTotalBrokenAndValidAndPendingLinks(status) {
-        const allowed = ["valid", "broken", "pending"];
-        const targetStatus = allowed.includes(status) ? status : "broken";
+  // 2. Links Analytics
+  async getTotalBrokenAndValidAndPendingLinks(status) {
+    const allowed = ["valid", "broken", "pending"];
+    const targetStatus = allowed.includes(status) ? status : "broken";
 
-        const result = await pool.query(
-            `SELECT
+    const result = await pool.query(
+      `SELECT
                 server_name,
                 last_check_status,
                 COUNT(server_name)::integer AS total
@@ -50,61 +50,63 @@ const Analytics = {
             WHERE last_check_status = $1
             GROUP BY server_name, last_check_status
             ORDER BY total DESC`,
-            [targetStatus],
-        );
-        return result.rows;
-    },
+      [targetStatus],
+    );
+    return result.rows;
+  },
 
-    // 4. Medias Analytics (Paginated)
-    async getNotReadyMedias({ page = 1, limit = 20 }, isExport = false) {
-        const parsedPage = Math.max(1, parseInt(page, 10) || 1);
-        const parsedLimit = Math.max(1, parseInt(limit, 10) || 20);
-        const offset = (parsedPage - 1) * parsedLimit;
+  // 4. Medias Analytics (Paginated)
+  async getNotReadyMedias({ page = 1, limit = 20 }, isExport = false) {
+    const parsedPage = Math.max(1, parseInt(page, 10) || 1);
+    const parsedLimit = Math.max(1, parseInt(limit, 10) || 20);
+    const offset = (parsedPage - 1) * parsedLimit;
 
-        // إلغاء الـ LIMIT والـ OFFSET تماماً في حالة طلب التصدير
-        const limitClause = isExport ? "" : `LIMIT $1 OFFSET $2`;
-        const queryParams = isExport ? [] : [parsedLimit, offset];
+    // إلغاء الـ LIMIT والـ OFFSET تماماً في حالة طلب التصدير
+    const limitClause = isExport ? "" : `LIMIT $1 OFFSET $2`;
+    const queryParams = isExport ? [] : [parsedLimit, offset];
 
-        const result = await pool.query(
-            `SELECT *, COUNT(*) OVER()::integer AS full_count 
+    const result = await pool.query(
+      `SELECT *, COUNT(*) OVER()::integer AS full_count 
             FROM medias 
             WHERE is_ready = false 
             ORDER BY created_at DESC
             ${limitClause}`,
-            queryParams,
-        );
+      queryParams,
+    );
 
-        const total = result.rows[0]?.full_count || 0;
-        const data = result.rows.map(({ full_count, ...item }) => item);
+    const total = result.rows[0]?.full_count || 0;
+    const data = result.rows.map(({ full_count, ...item }) => item);
 
-        return {
-            data,
-            pagination: {
-                total,
-                page: parsedPage,
-                limit: parsedLimit,
-                totalPage: Math.ceil(total / parsedLimit) || 1,
-            },
-        };
-    },
+    return {
+      data,
+      pagination: {
+        total,
+        page: parsedPage,
+        limit: parsedLimit,
+        totalPage: Math.ceil(total / parsedLimit) || 1,
+      },
+    };
+  },
 
-    // 5. Broken Links Analytics (Paginated)
-    async getBrokenLinks({ serverName, page = 1, limit = 20 }, isExport = false) {
-        if (!serverName) {
-            const err = new Error("Server Name required!");
-            err.statusCode = 400;
-            throw err;
-        }
-        const parsedPage = Math.max(1, parseInt(page, 10) || 1);
-        const parsedLimit = Math.max(1, parseInt(limit, 10) || 20);
-        const offset = (parsedPage - 1) * parsedLimit;
+  // 5. Broken Links Analytics (Paginated)
+  async getBrokenLinks({ serverName, page = 1, limit = 20 }, isExport = false) {
+    if (!serverName) {
+      const err = new Error("Server Name required!");
+      err.statusCode = 400;
+      throw err;
+    }
+    const parsedPage = Math.max(1, parseInt(page, 10) || 1);
+    const parsedLimit = Math.max(1, parseInt(limit, 10) || 20);
+    const offset = (parsedPage - 1) * parsedLimit;
 
-        // إلغاء الـ LIMIT والـ OFFSET تماماً في حالة طلب التصدير
-        const limitClause = isExport ? "" : `LIMIT $2 OFFSET $3`;
-        const queryParams = isExport ? [serverName] : [serverName, parsedLimit, offset];
+    // إلغاء الـ LIMIT والـ OFFSET تماماً في حالة طلب التصدير
+    const limitClause = isExport ? "" : `LIMIT $2 OFFSET $3`;
+    const queryParams = isExport
+      ? [serverName]
+      : [serverName, parsedLimit, offset];
 
-        const result = await pool.query(
-            `SELECT 
+    const result = await pool.query(
+      `SELECT 
             links.id,
             links.episode_id,
             links.server_name,
@@ -129,35 +131,40 @@ const Analytics = {
         AND links.server_name = $1
         ORDER BY links.last_check_at DESC
         ${limitClause}`,
-            queryParams,
-        );
+      queryParams,
+    );
 
-        const total = result.rows[0]?.full_count || 0;
-        const data = result.rows.map(({ full_count, ...item }) => item);
+    const total = result.rows[0]?.full_count || 0;
+    const data = result.rows.map(({ full_count, ...item }) => item);
 
-        return {
-            data,
-            pagination: {
-                total,
-                page: parsedPage,
-                limit: parsedLimit,
-                totalPage: Math.ceil(total / parsedLimit) || 1,
-            },
-        };
-    },
+    return {
+      data,
+      pagination: {
+        total,
+        page: parsedPage,
+        limit: parsedLimit,
+        totalPage: Math.ceil(total / parsedLimit) || 1,
+      },
+    };
+  },
 
-    // 6. Missing Episodes Analytics (Paginated)
-    async getMissingEpisodesByServer({ serverName, page = 1, limit = 20 }, isExport = false) {
-        const parsedPage = Math.max(1, parseInt(page, 10) || 1);
-        const parsedLimit = Math.max(1, parseInt(limit, 10) || 20);
-        const offset = (parsedPage - 1) * parsedLimit;
+  // 6. Missing Episodes Analytics (Paginated)
+  async getMissingEpisodesByServer(
+    { serverName, page = 1, limit = 20 },
+    isExport = false,
+  ) {
+    const parsedPage = Math.max(1, parseInt(page, 10) || 1);
+    const parsedLimit = Math.max(1, parseInt(limit, 10) || 20);
+    const offset = (parsedPage - 1) * parsedLimit;
 
-        // إلغاء الـ LIMIT والـ OFFSET تماماً في حالة طلب التصدير
-        const limitClause = isExport ? "" : `LIMIT $2 OFFSET $3`;
-        const queryParams = isExport ? [serverName] : [serverName, parsedLimit, offset];
+    // إلغاء الـ LIMIT والـ OFFSET تماماً في حالة طلب التصدير
+    const limitClause = isExport ? "" : `LIMIT $2 OFFSET $3`;
+    const queryParams = isExport
+      ? [serverName]
+      : [serverName, parsedLimit, offset];
 
-        const result = await pool.query(
-            `SELECT 
+    const result = await pool.query(
+      `SELECT 
                 episodes.*, 
                 medias.title, 
                 medias.media_type,
@@ -172,31 +179,31 @@ const Analytics = {
             )
             ORDER BY episodes.id ASC
             ${limitClause}`,
-            queryParams,
-        );
+      queryParams,
+    );
 
-        const total = result.rows[0]?.full_count || 0;
-        const data = result.rows.map(({ full_count, ...item }) => item);
+    const total = result.rows[0]?.full_count || 0;
+    const data = result.rows.map(({ full_count, ...item }) => item);
 
-        return {
-            data,
-            pagination: {
-                total,
-                page: parsedPage,
-                limit: parsedLimit,
-                totalPage: Math.ceil(total / parsedLimit) || 1,
-            },
-        };
-    },
+    return {
+      data,
+      pagination: {
+        total,
+        page: parsedPage,
+        limit: parsedLimit,
+        totalPage: Math.ceil(total / parsedLimit) || 1,
+      },
+    };
+  },
 
-    // 7. Locked Telegram Links Analytics (Paginated)
-    async getLockedTelegramLinks({ page = 1, limit = 20 }, isExport = false) {
-        const parsedPage = Math.max(1, parseInt(page, 10) || 1);
-        const parsedLimit = Math.max(1, parseInt(limit, 10) || 20);
-        const offset = (parsedPage - 1) * parsedLimit;
+  // 7. Locked Telegram Links Analytics (Paginated)
+  async getLockedTelegramLinks({ page = 1, limit = 20 }, isExport = false) {
+    const parsedPage = Math.max(1, parseInt(page, 10) || 1);
+    const parsedLimit = Math.max(1, parseInt(limit, 10) || 20);
+    const offset = (parsedPage - 1) * parsedLimit;
 
-        const result = await pool.query(
-            `SELECT
+    const result = await pool.query(
+      `SELECT
                 links.id,
                 links.episode_id, 
                 links.server_name, 
@@ -217,22 +224,22 @@ const Analytics = {
             AND links.server_name = 'telegram_direct'
             ORDER BY links.created_at DESC
             LIMIT $1 OFFSET $2`,
-            [parsedLimit, offset],
-        );
+      [parsedLimit, offset],
+    );
 
-        const total = result.rows[0]?.full_count || 0;
-        const data = result.rows.map(({ full_count, ...item }) => item);
+    const total = result.rows[0]?.full_count || 0;
+    const data = result.rows.map(({ full_count, ...item }) => item);
 
-        return {
-            data,
-            pagination: {
-                total,
-                page: parsedPage,
-                limit: parsedLimit,
-                totalPage: Math.ceil(total / parsedLimit) || 1,
-            },
-        };
-    },
+    return {
+      data,
+      pagination: {
+        total,
+        page: parsedPage,
+        limit: parsedLimit,
+        totalPage: Math.ceil(total / parsedLimit) || 1,
+      },
+    };
+  },
 };
 
-module.exports = Analytics;
+export default Analytics;

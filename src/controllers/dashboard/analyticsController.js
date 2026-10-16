@@ -1,6 +1,7 @@
 // /backend/controllers/dashboard/analyticsController.js
-const Analytics = require("../../service/analytics.js");
-const { convertToCSV } = require("../../utils/csv");
+import Analytics from "#src/service/analytics.js";
+import convertToCSV from "#src/utils/csv.js";
+
 
 // 1. general
 // getSystemCounters()
@@ -131,7 +132,7 @@ const handleGetNotReadyMedias = async (req, res, next) => {
 };
 
 
-module.exports = {
+export {
     handleGetSystemCounters,
     handleGetTotalBrokenAndValidAndPendingLinks,
     handleGetLockedTelegramLinks,

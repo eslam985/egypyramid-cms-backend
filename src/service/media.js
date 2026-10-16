@@ -1,6 +1,7 @@
 // /projects/project_Full-stack/egyPyramidDashbord/backend/service/media.js
-const pool = require("../config/dbConn.js");
-const { slugify } = require("../utils/regex");
+import pool from "#src/config/dbConn.js";
+import { slugify } from "#src/utils/regex.js"
+
 
 const Media = {
   // 8354-brothers-and-sisters
@@ -255,4 +256,4 @@ const Media = {
   },
 };
 
-module.exports = Media;
+export default Media;

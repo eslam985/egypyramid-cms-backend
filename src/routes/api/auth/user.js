@@ -1,23 +1,23 @@
-const express = require("express");
+import express from "express";
 const router = express.Router();
 
-const { validateRequest } = require("../../../middleware/validation.js");
-const ROLES_LIST = require("../../../config/roles_list.js");
-const verifyRoles = require("../../../middleware/verifyRoles.js");
+import { validateRequest } from "#src/middleware/validation.js";
+import verifyRoles from "#src/middleware/verifyRoles.js";
+import ROLES_LIST from "#src/config/roles_list.js";
 
-const {
+import {
   updateUserByIdSchema,
   changePasswordSchema,
   deleteSessionsBy_uuid,
-} = require("../../../middleware/schemas/userSchema.js");
+} from "#src/middleware/schemas/userSchema.ts";
 
-const {
+import {
   handleChangePassword,
   handleUpdateUserInfo,
   handleGetSessionsByUserId,
   handleRemoveSessionById,
   handleFindUserById,
-} = require("../../../controllers/auth/userController");
+} from "#src/controllers/auth/userController.js";
 
 router.put(
   "/update/info",
@@ -47,4 +47,4 @@ router.delete(
   handleRemoveSessionById,
 );
 
-module.exports = router;
+export default router;

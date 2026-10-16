@@ -1,7 +1,8 @@
 // backend/src/controllers/auth/avatarController.js
-const AvatarService = require('../../service/avatarService');
-const cloudinary = require('../../config/cloudinary');
-const streamifier = require('streamifier');
+import streamifier from "streamifier";
+
+import AvatarService from "#src/service/avatarService.js";
+import cloudinary from "#src/config/cloudinary.js";
 
 // الرابط الثابت للصورة الافتراضية لحمايتها من الحذف السحابي
 const DEFAULT_AVATAR = 'https://res.cloudinary.com/dbahqgo8j/image/upload/blogger/iaeclevshfanh5j6x9ew.webp';
@@ -124,8 +125,8 @@ const handleSetAvatarFromHistory = async (req, res, next) => {
     }
 };
 
-module.exports = { 
+export { 
     handleUploadAvatar, 
     handleDeleteAvatar,
-    handleSetAvatarFromHistory // تصدير الدالة الجديدة للروتس
+    handleSetAvatarFromHistory 
 };

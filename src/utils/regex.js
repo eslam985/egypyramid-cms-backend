@@ -17,7 +17,7 @@ const slugify = (str) => {
         .replace(/^-+|-+$/g, "");
 };
 
-module.exports = {
+export {
     nameRe,
     phoneRe,
     labelRe,

@@ -1,7 +1,8 @@
 ///backend/controllers/auth/refreshTokenController.js
-const User = require("../../service/userService.js");
-const jwt = require("jsonwebtoken");
-const cookieOptions = require("../../config/cookieOptions.js");
+import jwt from "jsonwebtoken";
+
+import cookieOptions from "#src/config/cookieOptions.js";
+import User from "#src/service/userService.js";
 
 const handleRefreshToken = async (req, res, next) => {
     try {
@@ -53,4 +54,4 @@ const handleRefreshToken = async (req, res, next) => {
     }
 };
 
-module.exports = handleRefreshToken;
+export default handleRefreshToken;

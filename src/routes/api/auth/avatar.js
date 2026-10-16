@@ -1,27 +1,24 @@
 // backend/src/routes/api/auth/avatar.js
-const express = require("express");
+
+import express from "express";
 const router = express.Router();
 
-const upload = require("../../../middleware/uploadMiddleware.js");
-const {
-  validateFile,
-  validateRequest,
-} = require("../../../middleware/validation.js"); // 💡 استوردنا validateRequest للفحص العادي
+import { validateFile, validateRequest } from "#src/middleware/validation.js";
+import upload from "#src/middleware/uploadMiddleware.js";
+import verifyRoles from "#src/middleware/verifyRoles.js";
+import ROLES_LIST from "#src/config/roles_list.js";
 
-const {
-  uploadAvatarSchema,
-  setAvatarFromHistorySchema, // 💡 استيراد المخطط الجديد لفحص روابط السجل
-} = require("../../../middleware/schemas/avatarSchema.js");
-
-const {
+import {
   handleUploadAvatar,
   handleDeleteAvatar,
-  handleSetAvatarFromHistory, // 💡 استيراد الدالة الجديدة من الـ Controller
-} = require("../../../controllers/auth/avatarController.js");
-const ROLES_LIST = require("../../../config/roles_list.js");
-const verifyRoles = require("../../../middleware/verifyRoles.js");
+  handleSetAvatarFromHistory,
+} from "#src/controllers/auth/avatarController.js";
 
-// 1. رفع صورة جديدة ونقل الحالية للسجل
+import {
+  uploadAvatarSchema,
+  setAvatarFromHistorySchema,
+} from "#src/middleware/schemas/avatarSchema.ts";
+
 router.post(
   "/",
   verifyRoles(ROLES_LIST.User),
@@ -30,10 +27,8 @@ router.post(
   handleUploadAvatar,
 );
 
-// 2. الحذف النهائي وتصفير الصورة الحالية
 router.delete("/", verifyRoles(ROLES_LIST.User), handleDeleteAvatar);
 
-// 3. مسار جديد: اختيار وتبديل الصورة من السجل القديم
 router.patch(
   "/set-previous",
   verifyRoles(ROLES_LIST.User),
@@ -41,4 +36,4 @@ router.patch(
   handleSetAvatarFromHistory,
 );
 
-module.exports = router;
+export default router;

@@ -1,4 +1,4 @@
-const pool = require("../config/dbConn.js");
+import pool from "#src/config/dbConn.js";
 
 const Link = {
     async createLink(episode_id, data = {}) {
@@ -99,4 +99,4 @@ const Link = {
 
 };
 
-module.exports = Link;
+export default Link;

@@ -1,4 +1,4 @@
-const pool = require("../config/dbConn.js");
+import pool from "#src/config/dbConn.js";
 
 const User = {
   async createNewUser({ username, email, password, roles }) {
@@ -169,4 +169,4 @@ const User = {
   },
 };
 
-module.exports = User;
+export default User;

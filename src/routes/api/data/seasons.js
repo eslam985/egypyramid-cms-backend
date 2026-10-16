@@ -1,25 +1,25 @@
-const express = require("express");
+import express from "express";
 const router = express.Router();
 
-const { validateRequest } = require("../../../middleware/validation");
-const {
-  createIdParamSchema,
-} = require("../../../middleware/schemas/IDS_schema");
-const ROLES_LIST = require("../../../config/roles_list.js");
-const verifyRoles = require("../../../middleware/verifyRoles.js");
-const {
+import { validateRequest } from "#src/middleware/validation.js";
+import verifyRoles from "#src/middleware/verifyRoles.js";
+import ROLES_LIST from "#src/config/roles_list.js";
+
+import { createIdParamSchema } from "#src/middleware/schemas/IDS_schema.js";
+
+import {
   createSeasonSchema,
   updateSeasonSchema,
-} = require("../../../middleware/schemas/seasonSchema");
+} from "#src/middleware/schemas/seasonSchema.ts";
 
-const {
+import {
   handleCreateSeason,
   handleUpdateSeason,
   handleFindSeasonById,
   handleFindSeasonsByMediaId,
   handleDeleteSeasonById,
   handleFindAllSeasons,
-} = require("../../../controllers/items/seasonsController");
+} from "#src/controllers/items/seasonsController.js";
 // /api/seasons"
 
 // GET & POST /api/seasons/media/:media_id (جلب وإضافة مواسم لميديا معينة)
@@ -61,4 +61,4 @@ router.delete(
   handleDeleteSeasonById,
 );
 
-module.exports = router;
+export default router;

@@ -1,5 +1,6 @@
-const Link = require("../../service/link");
-const { convertToCSV } = require("../../utils/csv");
+import convertToCSV from "#src/utils/csv.js";
+
+import Link from "#src/service/link.js";
 
 // createLink(episode_id, data = {})
 const handleCreateLink = async (req, res, next) => {
@@ -114,7 +115,7 @@ const handleFindAllLinks = async (req, res, next) => {
     }
 };
 
-module.exports = {
+export {
 	handleCreateLink,
 	handleUpdateLinkById,
 	handleFindLinkByEpisodeId,

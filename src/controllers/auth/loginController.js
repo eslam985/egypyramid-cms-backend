@@ -1,7 +1,9 @@
-const bcrypt = require("bcrypt");
-const User = require("../../service/userService.js");
-const jwt = require("jsonwebtoken");
-const cookieOptions = require("../../config/cookieOptions.js");
+import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
+
+import cookieOptions from "#src/config/cookieOptions.js";
+import User from "#src/service/userService.js";
+
 
 const handleLogin = async (req, res, next) => {
     try {
@@ -62,4 +64,4 @@ const handleLogin = async (req, res, next) => {
     }
 };
 
-module.exports = handleLogin;
+export default handleLogin;

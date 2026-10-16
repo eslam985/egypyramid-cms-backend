@@ -1,5 +1,6 @@
-const bcrypt = require('bcrypt');
-const User = require('../../service/userService')
+import bcrypt from "bcrypt";
+
+import User from "#src/service/userService.js";
 
 const handleChangePassword = async (req, res, next) => {
     try {
@@ -133,7 +134,9 @@ const handleFindUserById = async (req, res, next) => {
     next(err)
   }
 }
-module.exports = { 
+
+
+export { 
   handleChangePassword, 
   handleUpdateUserInfo, 
   handleGetSessionsByUserId,

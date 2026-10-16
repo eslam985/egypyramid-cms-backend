@@ -1,9 +1,10 @@
 // /backend/middleware/verifyJWT.js
-const jwt = require("jsonwebtoken");
+import jwt  from  "jsonwebtoken";
 
 const verifyJWT = (req, res, next) => {
     // authorization
     const authHeader = req.headers.authorization || req.headers.Authorization;
+    
     if (!authHeader?.startsWith("Bearer ")) 
         return res.status(401).json({ success: false, message: "Unauthorized: Access token is missing" });
 
@@ -24,4 +25,4 @@ const verifyJWT = (req, res, next) => {
     });
 };
 
-module.exports = verifyJWT;
+export default verifyJWT;

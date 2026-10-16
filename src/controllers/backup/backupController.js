@@ -1,4 +1,4 @@
-const BackupService = require("../../service/backupService");
+import BackupService from "#src/service/backupService.js";
 
 const handleDownloadBackup = async (req, res, next) => {
   try {
@@ -63,6 +63,6 @@ const handleDownloadBackup = async (req, res, next) => {
   }
 };
 
-module.exports = {
+export {
   handleDownloadBackup
 };

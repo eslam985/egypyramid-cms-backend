@@ -49,6 +49,4 @@ const convertToCSV = (data = []) => {
   return '\ufeff' + csvRows.join('\n');
 };
 
-module.exports = {
-  convertToCSV
-};
+export default convertToCSV

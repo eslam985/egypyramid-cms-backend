@@ -1,19 +1,19 @@
-const express = require("express");
+import express from "express";
 const router = express.Router();
 
-const { validateRequest } = require("../../../middleware/validation");
+import { validateRequest } from "#src/middleware/validation.js";
+import verifyRoles from "#src/middleware/verifyRoles.js";
+import ROLES_LIST from "#src/config/roles_list.js";
 
-const {
-  createIdParamSchema,
-} = require("../../../middleware/schemas/IDS_schema");
-const ROLES_LIST = require("../../../config/roles_list.js");
-const verifyRoles = require("../../../middleware/verifyRoles.js");
-const {
+import { createIdParamSchema } from "#src/middleware/schemas/IDS_schema.js";
+
+import {
   createEpisodeSchema,
   updateEpisodeSchema,
   findEpisodesByMediaIdSchema,
-} = require("../../../middleware/schemas/episodeSchema");
-const {
+} from "#src/middleware/schemas/episodeSchema.ts";
+
+import {
   handleCreateEpisode,
   handleUpdateEpisodeById,
   handleFindEpisodesBySeasonId,
@@ -21,7 +21,7 @@ const {
   handleFindEpisodeById,
   handleDeleteEpisodeById,
   handleFindAllEpisodes,
-} = require("../../../controllers/items/episodesController");
+} from "#src/controllers/items/episodesController.js";
 
 // --- 2. Episodes Routes ---
 // Nested Episodes
@@ -32,6 +32,7 @@ router.get(
   validateRequest(findEpisodesByMediaIdSchema),
   handleFindEpisodesByMediaId,
 );
+
 router.post(
   "/media/:media_id",
   verifyRoles(ROLES_LIST.Editor),
@@ -60,12 +61,14 @@ router.get(
   validateRequest(createIdParamSchema()),
   handleFindEpisodeById,
 );
+
 router.patch(
   "/:id",
   verifyRoles(ROLES_LIST.Editor),
   validateRequest(updateEpisodeSchema),
   handleUpdateEpisodeById,
 );
+
 router.delete(
   "/:id",
   verifyRoles(ROLES_LIST.Admin),
@@ -73,4 +76,4 @@ router.delete(
   handleDeleteEpisodeById,
 );
 
-module.exports = router;
+export default router;
