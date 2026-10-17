@@ -1,3 +1,4 @@
+import { CustomError } from "#src/utils/customErr.js";
 import { spawn } from "child_process";
 
 const BackupService = {
@@ -5,31 +6,27 @@ const BackupService = {
    * يقوم بتنفيذ أمر pg_dump باستخدام رابط قاعدة البيانات المباشر ويعيد الـ stream
    */
   async generateBackupStream() {
-    if (!process.env.DATABASE_URL) {
-      const error = new Error(
-        "DATABASE_URL is missing in environment variables!",
-      );
-      error.statusCode = 500;
-      throw error;
-    }
+
+    if (!process.env.DATABASE_URL) throw new CustomError("DATABASE_URL is missing in environment variables!", 500)
 
     // 💡 حل مشكلة الـ @ في كلمة المرور تلقائياً:
     // نقوم باستبدال حرف @ الموجود في كلمة المرور بـ %40 فقط إذا كان الرابط يحتوي على أكثر من علامة @
-    let dbUrl = process.env.DATABASE_URL;
+    let dbUrl: string = process.env.DATABASE_URL;
 
     // التحقق مما إذا كانت كلمة المرور تحتوي على @ (مما يسبب تكرار الـ @ في الرابط)
-    const atCount = (dbUrl.match(/@/g) || []).length;
+    const atCount: number = (dbUrl.match(/@/g) || []).length;
+
     if (atCount > 1) {
       // نقوم بفصل الرابط من آخر @ (وهي التي تفصل بين المضيف وبيانات الاعتماد)
-      const lastAtIndex = dbUrl.lastIndexOf("@");
-      const credentials = dbUrl.substring(0, lastAtIndex);
-      const hostPart = dbUrl.substring(lastAtIndex);
+      const lastAtIndex: number = dbUrl.lastIndexOf("@");
+      const credentials: string = dbUrl.substring(0, lastAtIndex);
+      const hostPart: string = dbUrl.substring(lastAtIndex);
 
       // نقوم بترميز الـ @ داخل جزء كلمة المستخدم والاصطلاحات فقط لـ %40
       // مع ترك أول @ التي تأتي بعد postgresql:// دون تغيير
-      const fixedCredentials = credentials.replace(
+      const fixedCredentials: string = credentials.replace(
         /(postgresql:\/\/.*?:)(.*)/,
-        (match, prefix, password) => {
+        (_match, prefix, password) => {
           return prefix + password.replace(/@/g, "%40");
         },
       );
@@ -48,9 +45,7 @@ const BackupService = {
 
     // التحقق في حال فشل بدء العملية
     pgDump.on("error", (err) => {
-      const error = new Error(`Failed to start backup process: ${err.message}`);
-      error.statusCode = 500;
-      throw error;
+      throw new CustomError(`Failed to start backup process: ${err.message}`, 500)
     });
 
     return pgDump;

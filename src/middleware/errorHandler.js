@@ -1,4 +1,6 @@
+// /src/middleware/errorHandler.js
 import { logEvents } from "#src/middleware/logEvents.js";
+import { CustomError } from "#src/utils/customErr.js";
 
 const errorHandler = (err, req, res, next) => {
   // 1. تسجيل الخطأ في الملف والـ Console دائماً
@@ -29,24 +31,31 @@ const errorHandler = (err, req, res, next) => {
     });
   }
 
-  // 3. خطأ تكرار البيانات من PostgreSQL
-  if (err.code === "23505" || err.statusCode === 409) {
+  // 3. أخطاء التطبيق المخصصة القادمة من الكلاس الخاص بنا
+  if (err instanceof CustomError) {
+    return res.status(err.statusCode).json({
+      success: false,
+      message: err.message,
+    });
+  }
+
+  // 4. خطأ تكرار البيانات من PostgreSQL
+  if (err.code === "23505") {
     return res.status(409).json({
       success: false,
-      message: err.statusCode === 409 ? err.message : "Data already exists",
+      message: "Data already exists",
     });
   }
 
-  // 4. خطأ المفتاح الأجنبي (Foreign Key Violation) أو العنصر غير موجود
-  if (err.code === "23503" || err.statusCode === 404) {
+  // 5. خطأ المفتاح الأجنبي (Foreign Key Violation) من PostgreSQL
+  if (err.code === "23503") {
     return res.status(404).json({
       success: false,
-      message:
-        err.statusCode === 404 ? err.message : "Referenced resource not found",
+      message: "Referenced resource not found",
     });
   }
 
-  // 5. باقي الأخطاء غير المتوقعة (Server Errors)
+  // 6. باقي الأخطاء غير المتوقعة (Server Errors)
   const statusCode = err.status || err.statusCode || 500;
   res.status(statusCode).json({
     success: false,

@@ -9,9 +9,9 @@ import ROLES_LIST from "#src/config/roles_list.js";
 import { createIdParamSchema } from "#src/middleware/schemas/IDS_schema.js";
 
 import {
-  createGenreSchema,
   updateGenreByIdSchema,
   findGenreByNameSchema,
+  createGenreSchema,
 } from "#src/middleware/schemas/genreSchema.ts";
 
 import {

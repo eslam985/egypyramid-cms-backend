@@ -18,5 +18,5 @@ const searchPaginationSchema = z.object({
 
 export { paginationSchema, searchPaginationSchema };
 
-// export type SearchPaginationType = z.infer<typeof searchPaginationSchema>;
-// export type PaginationType = z.infer<typeof paginationSchema>;
+export type SearchPaginationType = z.infer<typeof searchPaginationSchema>;
+export type PaginationType = z.infer<typeof paginationSchema>;

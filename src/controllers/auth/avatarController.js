@@ -3,6 +3,7 @@ import streamifier from "streamifier";
 
 import AvatarService from "#src/service/avatarService.js";
 import cloudinary from "#src/config/cloudinary.js";
+import { CustomError } from "#src/utils/customErr.js";
 
 // الرابط الثابت للصورة الافتراضية لحمايتها من الحذف السحابي
 const DEFAULT_AVATAR = 'https://res.cloudinary.com/dbahqgo8j/image/upload/blogger/iaeclevshfanh5j6x9ew.webp';
@@ -64,11 +65,14 @@ const handleUploadAvatar = async (req, res, next) => {
         // تحديث قاعدة البيانات (الدالة الذكية المحدثة بالاستعلام الواحد)
         const result = await AvatarService.updateAvatarUrl(userId, imageUrl);
 
+        if (!result) throw new CustomError("User not found!", 404)
+
         return res.status(200).json({
             success: true,
             message: "تم تحديث الصورة الشخصية بنجاح!",
             data: result,
         });
+        
     } catch (err) {
         next(err);
     }
@@ -111,6 +115,8 @@ const handleSetAvatarFromHistory = async (req, res, next) => {
         // استدعاء الخدمة الذرية للتبديل السريع في قاعدة البيانات
         const result = await AvatarService.setAvatarFromHistory(userId, chosenAvatarUrl);
 
+        if (!result) throw new CustomError("User not found!", 404)
+        
         return res.status(200).json({
             success: true,
             message: "تم تبديل وتعيين الصورة الشخصية من السجل بنجاح",

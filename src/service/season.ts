@@ -1,7 +1,8 @@
+import {BaseSeasonQueryType} from '#src/middleware/schemas/seasonSchema.js'
+import { SeasonResponse, AllowedSortedSeasonColumns } from '#src/types/seasonType.js'
 import pool from "#src/config/dbConn.js";
-
 const Season = {
-    async createSeason(media_id, season_number) {
+    async createSeason(media_id: number, season_number: number): Promise<SeasonResponse | null> {
         const result = await pool.query(
             `INSERT INTO seasons (media_id, season_number) VALUES($1, $2) RETURNING *`,
             [media_id, season_number],
@@ -9,7 +10,7 @@ const Season = {
 
         return result.rows[0] || null;
     },
-    async updateSeasonById(id, season_number) {
+    async updateSeasonById(id: number, season_number: number): Promise<SeasonResponse | null> {
         const result = await pool.query(
             `UPDATE seasons 
             SET season_number = $1 
@@ -20,7 +21,8 @@ const Season = {
 
         return result.rows[0] || null;
     },
-    async findSeasonsByMediaId(media_id) {
+    async findSeasonsByMediaId(media_id: number): Promise<SeasonResponse[] | null> {
+
         const result = await pool.query(
             `SELECT 
                 seasons.*,
@@ -35,7 +37,7 @@ const Season = {
 
         return result.rows;
     },
-    async findSeasonById(id) {
+    async findSeasonById(id: number): Promise<SeasonResponse | null> {
         const result = await pool.query(
             `SELECT * FROM seasons WHERE id = $1 LIMIT 1`,
             [id],
@@ -44,19 +46,28 @@ const Season = {
         return result.rows[0] || null;
     },
 
-    async deleteSeasonById(id) {
+    async deleteSeasonById(id: number): Promise<number | null>{
         const result = await pool.query(
             `DELETE FROM seasons WHERE id = $1 RETURNING *`,
             [id],
         );
 
-        return result.rows[0] || null;
+        return result.rowCount
     },
 
         // 💡 دالة جديدة لجلب كل المواسم ودعم التصدير والـ Pagination
-    async findAllSeasons({ page = 1, limit = 20, sortBy = "created_at", sortOrder = "DESC" } = {}, isExport = false) {
-        const queryParams = [];
-        
+    async findAllSeasons(
+      { page = 1, limit = 20, sortBy = "created_at", sortOrder = "DESC" }: BaseSeasonQueryType, 
+      isExport: boolean = false
+    ): Promise<SeasonResponse[]> {
+        const queryParams: (number | string)[] = [];
+
+        const allowedColumns: AllowedSortedSeasonColumns = {
+          season_number: "seasons.season_number",
+          created_at: "seasons.created_at",
+          media_id: "seasons.media_id",
+          id: "seasons.id",
+        };
         // إلغاء الـ LIMIT والـ OFFSET لو كان الطلب تصدير (Export)
         const border = isExport ? "" : `LIMIT $1`;
         const skip = isExport ? "" : `OFFSET $2`;
@@ -67,10 +78,7 @@ const Season = {
             queryParams.push(limitNum, offset);
         }
 
-        const allowedColumns = {
-            season_number: "seasons.season_number",
-            created_at: "seasons.created_at",
-        };
+
         const orderByColumn = allowedColumns[sortBy] || "seasons.created_at";
         const orderDirection = String(sortOrder).toUpperCase() === "ASC" ? "ASC" : "DESC";
 

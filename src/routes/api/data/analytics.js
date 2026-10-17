@@ -5,7 +5,7 @@ import { validateRequest } from "#src/middleware/validation.js";
 import verifyRoles from "#src/middleware/verifyRoles.js";
 import ROLES_LIST from "#src/config/roles_list.js";
 
-import { paginationSchema } from "#src/middleware/schemas/paginationSchema.js";
+import { paginationSchema } from "#src/middleware/schemas/paginationSchema.ts";
 
 import {
   getTotalBrokenAndValidAndPendingLinksSchema,

@@ -10,11 +10,8 @@ const matchRegex = (input, regx) => regx.test(input);
 
 const slugify = (str) => {
     if (!str || typeof str !== "string") return "";
-    return str
-        .trim()
-        .toLowerCase()
-        .replace(/[^a-z0-9\u0600-\u06FF]+/g, "-")
-        .replace(/^-+|-+$/g, "");
+    
+    return str.trim().toLowerCase().replace(/[^a-z0-9\u0600-\u06FF]+/g, "-").replace(/^-+|-+$/g, "");
 };
 
 export {

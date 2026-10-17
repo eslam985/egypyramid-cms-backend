@@ -95,8 +95,10 @@ const handleFindMediaById = async (req, res, next) => {
 const handleFindMediaByAnyId = async (req, res, next) => {
     try {
         const id = req.params.id;
-        const targetTable = req.query.targetTable || null; // اختياري لاستغلال الميزة الجديدة
-        
+        let targetTable = req.query.targetTable || null; // اختياري لاستغلال الميزة الجديدة
+        if(targetTable === 'all') {
+          targetTable = null
+        }
         const result = await Media.findMediaByAnyId(id, targetTable);
         
         if (!result || result.length === 0) 
