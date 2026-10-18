@@ -1,35 +1,37 @@
 /**
- * تحويل مصفوفة من الكائنات (Objects) إلى نص بصيغة CSV بشكل ديناميكي
- * @param {Array} data - مصفوفة البيانات المراد تصديرها
- * @returns {String} - النص الجاهز للتصدير كملف CSV
+ * Converts an array of objects to a CSV string.
+ * @param data - The array of data to export.
+ * @returns The CSV string ready for export.
  */
-const convertToCSV = (data = []) => {
+const convertToCSV = (data: Record<string, unknown>[]): string => {
+
   if (!Array.isArray(data) || data.length === 0) {
     return '';
   }
 
   // 1. استخراج أسماء الأعمدة (Headers) تلقائياً من مفاتيح أول كائن
-  const headers = Object.keys(data[0]);
+  const headers: string[] = Object.keys(data[0]!);
 
   // 2. بناء السطر الأول (العناوين)
-  const csvRows = [headers.join(',')];
+  const csvRows: string[] = [headers.join(',')];
 
   // 3. تحويل كل كائن إلى سطر مفصول بفواصل
   for (const row of data) {
-    const values = headers.map(header => {
-      let value = row[header];
+    const values: string[] = headers.map(header => {
+      const rawValue = row[header];
+      let value: string;
 
       // إذا كانت القيمة فارغة أو غير معرفة
-      if (value === null || value === undefined) {
+      if (rawValue === null || rawValue === undefined) {
         value = '';
       }
       // إذا كانت القيمة مصفوفة أو كائن (مثل تصنيفات الميديا Genres المدمجة في استعلامك)
-      else if (typeof value === 'object') {
-        value = JSON.stringify(value);
+      else if (typeof rawValue === 'object') {
+        value = JSON.stringify(rawValue) ?? '';
       } 
       // إذا كانت القيمة نصية، نحولها لنص صريح
       else {
-        value = String(value);
+        value = String(rawValue);
       }
 
       // حماية ملف الـ CSV: لو النص يحتوي على فواصل أو سطر جديد، يجب تغليفه بعلامات تنصيص ""

@@ -1,8 +1,9 @@
-// /src/middleware/errorHandler.js
+// /src/middleware/errorHandler.ts
+import type { ErrorRequestHandler } from "express";
 import { logEvents } from "#src/middleware/logEvents.js";
 import { CustomError } from "#src/utils/customErr.js";
 
-const errorHandler = (err, req, res, next) => {
+const errorHandler: ErrorRequestHandler = (err, _req, res, _next) => {
   // 1. تسجيل الخطأ في الملف والـ Console دائماً
   logEvents(`${err.name}: ${err.message}`, "errLog.txt");
   console.error(err.stack);
@@ -24,7 +25,12 @@ const errorHandler = (err, req, res, next) => {
   }
 
   // 2. خطأ الـ JSON غير السليم
-  if (err instanceof SyntaxError && err.status === 400 && "body" in err) {
+  if (
+    err instanceof SyntaxError &&
+    "status" in err &&
+    err.status === 400 &&
+    "body" in err
+  ) {
     return res.status(400).json({
       success: false,
       message: "Invalid JSON format provided in request body",
@@ -57,7 +63,7 @@ const errorHandler = (err, req, res, next) => {
 
   // 6. باقي الأخطاء غير المتوقعة (Server Errors)
   const statusCode = err.status || err.statusCode || 500;
-  res.status(statusCode).json({
+  return res.status(statusCode).json({
     success: false,
     message: err.message || "Internal Server Error",
   });
