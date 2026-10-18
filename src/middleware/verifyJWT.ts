@@ -2,10 +2,7 @@
 import jwt from "jsonwebtoken";
 import type { RequestHandler } from "express";
 
-interface DecodedToken extends jwt.JwtPayload {
-  userId: string;
-  roles: string;
-}
+import { DecodedToken } from '#src/types/userType.js'
 
 const verifyJWT: RequestHandler = (req, res, next) => {
   // authorization

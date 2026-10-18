@@ -5,12 +5,14 @@ import {
   FindUserByEmailResponse, 
   SessionResponse, 
   AllowedSessionColumnsType, 
-  FindByRefreshTokenResponse
+  FindByRefreshTokenResponse,
+  FindUserPasswordWithIdResponse
 } from '#src/types/userType.js'
 
 import { UpdateUserByIdType } from '#src/middleware/schemas/userSchema.js'
 import { OrderingType } from '#src/types/globalTypes.js'
 import { CustomError } from '#src/utils/customErr.js'
+import type { DeleteSessionsBy_uuidType } from "#src/middleware/schemas/userSchema.js";
 
 const User = {
   async createNewUser({ username, email, password, roles = '2001' }: UserRequest): Promise<UserResponse> {
@@ -28,7 +30,7 @@ const User = {
     return result.rows[0] 
   },
 
-  async updateUserById(userId: string, data: UpdateUserByIdType): Promise<UserResponse | null> {
+  async updateUserById(userId: string, data: UpdateUserByIdType['body']): Promise<UserResponse | null> {
     const keys: string[] = Object.keys(data);
     if (keys.length === 0) throw new CustomError('No Data provided!', 400)
 
@@ -48,7 +50,7 @@ const User = {
     return result.rows[0] || null;
   },
 
-  async changePassword(userId: number, newPassword: string): Promise<number | null> {
+  async changePassword(userId: string, newPassword: string): Promise<number | null> {
 
     const result = await pool.query(
       "UPDATE users SET password = $1, updated_at = now() WHERE id = $2",
@@ -68,7 +70,7 @@ const User = {
 
     return result.rows[0] || null;
   },
-  async findUserPasswordWithId(userId: string): Promise<{ id: string; password: string } | null> {
+  async findUserPasswordWithId(userId: string): Promise<FindUserPasswordWithIdResponse | null> {
     const result = await pool.query(
       `SELECT id, password FROM users WHERE id = $1`,
       [userId],
@@ -118,8 +120,10 @@ const User = {
   },
 
   async getSessionsByUserId(
-    userId: string, sortBy: keyof AllowedSessionColumnsType = "expires_at", sortOrder: OrderingType = "ASC"
-  ): Promise<SessionResponse[] | null> {
+    userId: string, 
+    sortBy: keyof AllowedSessionColumnsType = "expires_at", 
+    sortOrder: OrderingType = "ASC"
+  ): Promise<SessionResponse[]> {
 
     if (!userId) throw new CustomError('User Id Is Required!', 400)
 
@@ -186,7 +190,7 @@ const User = {
     return result.rowCount;
   },
 
-  async removeSessionById(sessionId: string): Promise<number | null> {
+  async removeSessionById(sessionId: DeleteSessionsBy_uuidType['body']['sessionId']): Promise<number | null> {
 
     const result = await pool.query(
       `DELETE FROM sessions WHERE id = $1`, 

@@ -1,3 +1,5 @@
+import jwt from "jsonwebtoken";
+
 export type RolesType = "2001" | "5150" | "1984";
 
 export interface UserRequest {
@@ -13,7 +15,12 @@ export interface SetAndUpdateAvatarUrlResponse {
   avatar_url: string;
   avatar_history: string[] | null;
 }
-
+export interface DeleteAvatarUrlResponse {
+  id: string; // UUID
+  username: string;
+  avatar_url: string;
+  avatar_history: string[] | null;
+}
 export interface UserResponse extends SetAndUpdateAvatarUrlResponse {
   email: string;
   roles: RolesType;
@@ -52,4 +59,15 @@ export interface FindByRefreshTokenResponse {
   refresh_token: string;
   refreshtoken: string;
   roles: RolesType;
+}
+
+export interface FindUserPasswordWithIdResponse {
+  id: string;
+  password: string;
+}
+export interface DecodedToken extends jwt.JwtPayload {
+  userId: string;
+  roles: RolesType;
+  iat?: number;
+  exp?: number;
 }

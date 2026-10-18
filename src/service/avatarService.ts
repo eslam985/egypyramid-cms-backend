@@ -1,5 +1,5 @@
 // backend/src/service/avatarService.js
-import { SetAndUpdateAvatarUrlResponse } from "#src/types/userType.js";
+import { SetAndUpdateAvatarUrlResponse, DeleteAvatarUrlResponse } from "#src/types/userType.js";
 import { CustomError } from "#src/utils/customErr.js";
 import pool from "#src/config/dbConn.js";
 
@@ -35,17 +35,21 @@ const AvatarService = {
         return result.rows[0] || null;
     },
     // 2. حذف الصورة الحالية والعودة للافتراضية (استعلام واحد سليم)
-    async deleteAvatarUrl(userId: string): Promise<number | null> {
+    async deleteAvatarUrl(userId: string): Promise<DeleteAvatarUrlResponse> {
         const result = await pool.query(
-          `UPDATE users 
+          `WITH old_data AS (
+            SELECT avatar_url FROM users WHERE id = $2
+          )
+          UPDATE users 
           SET 
             avatar_url = $1, 
             updated_at = now() 
-          WHERE id = $2`,
+          WHERE id = $2
+          RETURNING (SELECT avatar_url FROM old_data) AS avatar_url;`,
           [DEFAULT_AVATAR, userId]
         );
-
-        return result.rowCount;
+        
+        return result.rows[0];
     },
     // 3. التبديل من التاريخ (استعلام واحد يحذف من التاريخ ويدفع الحالية إليه معاً)
     async setAvatarFromHistory(userId: string, chosenAvatarUrl: string): Promise<SetAndUpdateAvatarUrlResponse | null> {

@@ -1,22 +1,29 @@
 // /backend/controllers/auth/logoutController.js
+import type { RequestHandler } from "express";
 
 import cookieOptions from "#src/config/cookieOptions.js";
 import User from "#src/service/userService.js";
 
-const handleLogout = async (req, res, next) => {
-    try {
-        const cookies = req.cookies;
-        if (!cookies?.jwt) return res.sendStatus(204);
+import { FindByRefreshTokenResponse } from '#src/types/userType.js'
 
-        const refreshToken = cookies.jwt;
+const handleLogout: RequestHandler = async (req, res, next) => {
+    try {
+        const refreshToken: string | undefined = req.cookies.jwt;
+
+        if (!refreshToken){
+          res.sendStatus(204);
+          return 
+        }
+
         
         // التحقق من وجود المستخدم والجلسة بناءً على التوكن
-        const isExistUser = await User.findByRefreshToken(refreshToken);
+        const isExistUser: FindByRefreshTokenResponse | null = await User.findByRefreshToken(refreshToken);
 
         // لو التوكن غير موجود في الداتا بيز امسح الكوكي وخلاص
         if (!isExistUser) {
             res.clearCookie("jwt", cookieOptions);
-            return res.sendStatus(204);
+            res.sendStatus(204);
+            return 
         }
 
         // حذف جلسة هذا الجهاز فقط من جدول sessions

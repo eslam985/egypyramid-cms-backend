@@ -9,6 +9,7 @@ import {
   updateUserByIdSchema,
   changePasswordSchema,
   deleteSessionsBy_uuid,
+  getSessionsQuerySchema,
 } from "#src/middleware/schemas/userSchema.ts";
 
 import {
@@ -35,6 +36,7 @@ router.put(
 router.get(
   "/sessions",
   verifyRoles(ROLES_LIST.User),
+  validateRequest(getSessionsQuerySchema),
   handleGetSessionsByUserId,
 );
 

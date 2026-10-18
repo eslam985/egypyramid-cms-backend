@@ -17,7 +17,6 @@ const userCoreShape = z.object({
       message: "roles must be only [ 5150, 1984, 2001 ]",
     })
     .default("2001")
-    .optional(),
 });
 
 // 2️⃣ الآن ننشئ الـ createUserSchema ونمدد الحقول الأساسية ونغلفها بـ body واحدة فقط!
@@ -59,12 +58,29 @@ const changePasswordSchema = z.object({
   }),
 });
 
+const getSessionsQuerySchema = z.object({
+  query: z.object({
+    sortBy: z
+      .enum([
+        "user_agent",
+        "ip_address",
+        "expires_at",
+        "created_at",
+        "updated_at",
+      ])
+      .optional(),
+    sortOrder: z.enum(["ASC", "DESC"]).optional(),
+  }),
+});
+
 export {
   createUserSchema,
   updateUserByIdSchema,
   loginUserSchema,
   changePasswordSchema,
   deleteSessionsBy_uuid,
+  getSessionsQuerySchema,
+  userCoreShape,
 };
 
 export type DeleteSessionsBy_uuidType = z.infer<typeof deleteSessionsBy_uuid>;
@@ -72,3 +88,5 @@ export type UpdateUserByIdType = z.infer<typeof updateUserByIdSchema>;
 export type ChangePasswordType = z.infer<typeof changePasswordSchema>;
 export type CreateUserType = z.infer<typeof createUserSchema>;
 export type LoginUserType = z.infer<typeof loginUserSchema>;
+export type UserCoreShapeType = z.infer<typeof userCoreShape>;
+export type GetSessionsQueryType = z.infer<typeof getSessionsQuerySchema>;
