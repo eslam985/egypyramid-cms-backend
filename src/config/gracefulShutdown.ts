@@ -1,7 +1,10 @@
-// config/gracefulShutdown.js
-const gracefulShutdown = (server, pool) => {
-  const shutdown = async (signal) => {
+import type { Server } from "node:http";
+import type { Pool } from "pg";
+
+const gracefulShutdown = (server: Server, pool: Pool): void => {
+  const shutdown = async (signal: string): Promise<void> => {
     console.log(`\n${signal} received...`);
+
     server.close(async () => {
       await pool.end();
       console.log("DB pool closed, bye!");

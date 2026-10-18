@@ -1,9 +1,11 @@
 import { Pool } from "pg";
 import "dotenv/config";
+import { CustomError } from "#src/utils/customErr.js";
 
-if (!process.env.DATABASE_URL) throw new Error("DATABASE_URL ناقص في ملف .env");
+if (!process.env.DATABASE_URL)
+  throw new CustomError("DATABASE_URL ناقص في ملف .env", 500);
 
-const pool = new Pool({
+const pool: Pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl:
     process.env.NODE_ENV === "production"

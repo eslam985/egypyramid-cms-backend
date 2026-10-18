@@ -1,8 +1,9 @@
-const envOrigins = process.env.ALLOWED_ORIGINS
-  ? process.env.ALLOWED_ORIGINS.split(",").map((origin) => origin.trim())
-  : [];
 
-const allowedOrigins = [...envOrigins];
+
+const envOrigins: string[] = 
+  process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(",").map((origin) => origin.trim()) : [];
+
+const allowedOrigins: string[] = [...envOrigins];
 
 // السماح بـ localhost في بيئة التطوير فقط
 if (process.env.NODE_ENV !== "production") {

@@ -1,6 +1,13 @@
-const isProduction = process.env.NODE_ENV === "production";
+const isProduction: boolean = process.env.NODE_ENV === "production";
 
-const cookieOptions = {
+type cookieOptions = {
+  httpOnly: boolean;
+  secure: boolean;
+  sameSite: string;
+  path: string;
+};
+
+const cookieOptions: cookieOptions = {
   httpOnly: true,
   secure: isProduction,
   sameSite: "Lax", // 👈 ستعمل بدون مشاكل لأن المتصفح يعتبرها Same-Site الآن
