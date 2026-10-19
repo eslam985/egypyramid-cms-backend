@@ -17,7 +17,7 @@ import {
 import {
   uploadAvatarSchema,
   setAvatarFromHistorySchema,
-} from "#src/middleware/schemas/avatarSchema.ts";
+} from "#src/middleware/schemas/avatarSchema.js";
 
 router.post(
   "/",

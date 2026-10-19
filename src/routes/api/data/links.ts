@@ -10,7 +10,7 @@ import { createIdParamSchema } from "#src/middleware/schemas/IDS_schema.js";
 import {
   createLinkSchema,
   updateLinkByIdSchema,
-} from "#src/middleware/schemas/linkSchema.ts";
+} from "#src/middleware/schemas/linkSchema.js";
 import {
   handleCreateLink,
   handleUpdateLinkById,

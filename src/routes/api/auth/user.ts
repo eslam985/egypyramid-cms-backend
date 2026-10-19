@@ -10,7 +10,7 @@ import {
   changePasswordSchema,
   deleteSessionsBy_uuid,
   getSessionsQuerySchema,
-} from "#src/middleware/schemas/userSchema.ts";
+} from "#src/middleware/schemas/userSchema.js";
 
 import {
   handleChangePassword,

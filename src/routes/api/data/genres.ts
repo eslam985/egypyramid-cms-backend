@@ -12,7 +12,7 @@ import {
   updateGenreByIdSchema,
   findGenreByNameSchema,
   createGenreSchema,
-} from "#src/middleware/schemas/genreSchema.ts";
+} from "#src/middleware/schemas/genreSchema.js";
 
 import {
   handleCreateGenre,

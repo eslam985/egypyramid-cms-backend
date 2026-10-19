@@ -12,7 +12,7 @@ import {
   updateMediaSchema,
   getMediasQuerySchema,
   getMediaByAnyId,
-} from "#src/middleware/schemas/mediaSchema.ts";
+} from "#src/middleware/schemas/mediaSchema.js";
 
 import {
   handleCreateMedia,

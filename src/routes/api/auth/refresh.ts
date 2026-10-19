@@ -1,7 +1,7 @@
 import express from "express";
 const router = express.Router();
 
-import handleRefreshToken  from "#src/controllers/auth/refreshTokenController.js";
+import handleRefreshToken from "#src/controllers/auth/refreshTokenController.js";
 
 router.post("/", handleRefreshToken);
 

@@ -5,13 +5,13 @@ import { validateRequest } from "#src/middleware/validation.js";
 import verifyRoles from "#src/middleware/verifyRoles.js";
 import ROLES_LIST from "#src/config/roles_list.js";
 
-import { paginationSchema } from "#src/middleware/schemas/paginationSchema.ts";
+import { paginationSchema } from "#src/middleware/schemas/paginationSchema.js";
 
 import {
   getTotalBrokenAndValidAndPendingLinksSchema,
   getMissingEpisodesByServerSchema,
   getBrokenLinksSchema,
-} from "#src/middleware/schemas/analyticsSchema.ts";
+} from "#src/middleware/schemas/analyticsSchema.js";
 
 import {
   handleGetSystemCounters,

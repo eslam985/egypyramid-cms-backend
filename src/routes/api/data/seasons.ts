@@ -10,7 +10,7 @@ import { createIdParamSchema } from "#src/middleware/schemas/IDS_schema.js";
 import {
   createSeasonSchema,
   updateSeasonSchema,
-} from "#src/middleware/schemas/seasonSchema.ts";
+} from "#src/middleware/schemas/seasonSchema.js";
 
 import {
   handleCreateSeason,
@@ -62,3 +62,4 @@ router.delete(
 );
 
 export default router;
+

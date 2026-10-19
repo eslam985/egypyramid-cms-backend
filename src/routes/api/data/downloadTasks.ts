@@ -14,8 +14,7 @@ import {
   createTaskSchema,
   UpdateTaskByIdSchema,
   getAllTasksSchema,
-  findByTaskNameSchema,
-} from "#src/middleware/schemas/downloadTaskSchema.ts";
+} from "#src/middleware/schemas/downloadTaskSchema.js";
 
 import {
   handleGetAllTasks,
@@ -23,8 +22,8 @@ import {
   handleCreateTask,
   handleUpdateTaskById,
   handleDeleteTaskById,
-  handleDeleteTasksByIds,
   handleDeleteAllTasksFailed,
+  handleDeleteTasksByIds
 } from "#src/controllers/items/downloadTasksController.js";
 
 router.get("/", validateRequest(getAllTasksSchema), handleGetAllTasks);

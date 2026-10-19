@@ -11,7 +11,7 @@ import {
   createEpisodeSchema,
   updateEpisodeSchema,
   findEpisodesByMediaIdSchema,
-} from "#src/middleware/schemas/episodeSchema.ts";
+} from "#src/middleware/schemas/episodeSchema.js";
 
 import {
   handleCreateEpisode,
