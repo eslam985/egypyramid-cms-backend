@@ -6,7 +6,7 @@ import type { RequestHandler } from "express";
 import { CreateAndUpdateGenreType } from '#src/middleware/schemas/genreSchema.js'
 import { GenresResponse } from '#src/types/genreType.js'
 
-import { strFromQueryOrParams, toNumber } from "#src/utils/paramAndQueryHelpes.js";
+import { toNumber } from "#src/utils/paramAndQueryHelpes.js";
 import { CustomError } from "#src/utils/customErr.js";
 
 const handleCreateGenre: RequestHandler = async (req, res, next) => {
@@ -28,7 +28,7 @@ const handleCreateGenre: RequestHandler = async (req, res, next) => {
 const handleUpdateGenreById: RequestHandler = async (req, res, next) => {
     try {
 
-      const id: number | null = toNumber(strFromQueryOrParams(req.params.id));
+      const id: number | null = toNumber(req.params.id);
 
       if(!id) throw new CustomError('Genre id Undefined! ', 400)
 
@@ -102,7 +102,7 @@ const handleFindGenreByName: RequestHandler = async (req, res, next) => {
 
 const handleFindGenreById: RequestHandler = async (req, res, next) => {
     try {
-      const id: number | null = toNumber(strFromQueryOrParams(req.params.id));
+      const id: number | null = toNumber(req.params.id);
 
       if (!id) throw new CustomError('Genre id Undefined! ', 400)
 
@@ -126,7 +126,7 @@ const handleFindGenreById: RequestHandler = async (req, res, next) => {
 
 const handleDeleteGenreById: RequestHandler = async (req, res, next) => {
     try {
-      const id: number | null = toNumber(strFromQueryOrParams(req.params.id));
+      const id: number | null = toNumber(req.params.id);
 
       if (!id) throw new CustomError('Genre id Undefined! ', 400)
 

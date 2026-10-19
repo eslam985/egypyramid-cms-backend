@@ -1,4 +1,13 @@
-
+export type AllowedColumnsInMedia = {
+  title: "medias.title";
+  category: "medias.category";
+  year: "medias.year";
+  is_ready: "medias.is_ready";
+  created_at: "medias.created_at";
+  rating: "medias.rating";
+  runtime: "medias.runtime";
+  media_type: "medias.media_type";
+};
 
 export interface MediasResponse {
   id: string;
@@ -29,19 +38,8 @@ export interface MediaGenreResponse {
   genre_id: string;
 }
 
-export type AllowedColumnsInMedia = {
-  title: "medias.title";
-  category: "medias.category";
-  year: "medias.year";
-  is_ready: "medias.is_ready";
-  created_at: "medias.created_at";
-  rating: "medias.rating";
-  runtime: "medias.runtime";
-  media_type: "medias.media_type";
-};
-
 export interface FindMediaByAnyIdResponse {
-  media_id: string
-  media_title: string
-  found_in: string
+  media_id: string;
+  media_title: string;
+  found_in: string;
 }

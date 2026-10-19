@@ -7,13 +7,13 @@ import { CreateEpisodeType, UpdateEpisodeType, BaseEpisodeQueryType } from '#src
 import { EpisodeResponse } from '#src/types/episodeType.js'
 
 
-import { strFromQueryOrParams, toNumber } from "#src/utils/paramAndQueryHelpes.js";
+import { toNumber } from "#src/utils/paramAndQueryHelpes.js";
 import { CustomError } from "#src/utils/customErr.js";
 
 const handleCreateEpisode: RequestHandler = async (req, res, next) => {
     try {
 
-      const mediaId = toNumber(strFromQueryOrParams(req.params.media_id));
+      const mediaId = toNumber(req.params.media_id);
       
       if(!mediaId) throw new CustomError('media Id Undefined! ', 400)
 
@@ -44,7 +44,7 @@ const handleCreateEpisode: RequestHandler = async (req, res, next) => {
 // updateEpisodeById(id, data)
 const handleUpdateEpisodeById: RequestHandler = async (req, res, next) => {
     try {
-      const id: number | null = toNumber(strFromQueryOrParams(req.params.id));
+      const id: number | null = toNumber(req.params.id);
       
       if (!id) throw new CustomError('episode id Undefined! ', 400)
 
@@ -70,7 +70,7 @@ const handleUpdateEpisodeById: RequestHandler = async (req, res, next) => {
 // findEpisodesBySeasonId(season_id)
 const handleFindEpisodesBySeasonId: RequestHandler = async (req, res, next) => {
     try {
-      const seasonId: number | null = toNumber(strFromQueryOrParams(req.params.season_id));
+      const seasonId: number | null = toNumber(req.params.season_id);
       
       if (!seasonId) throw new CustomError('season Id Undefined! ', 400)
 
@@ -89,7 +89,7 @@ import { PageAndLimitType } from '#src/types/globalTypes.js'
 
 const handleFindEpisodesByMediaId: RequestHandler = async (req, res, next) => {
     try {
-      const mediaId = toNumber(strFromQueryOrParams(req.params.media_id));
+      const mediaId = toNumber(req.params.media_id);
       
       if (!mediaId) throw new CustomError('media Id Undefined! ', 400)
 
@@ -110,7 +110,7 @@ const handleFindEpisodesByMediaId: RequestHandler = async (req, res, next) => {
 //  findEpisodeById(id)
 const handleFindEpisodeById: RequestHandler = async (req, res, next) => {
     try {
-      const id = toNumber(strFromQueryOrParams(req.params.id));
+      const id = toNumber(req.params.id);
       
       if (!id) throw new CustomError('episode id Undefined! ', 400)
 
@@ -134,7 +134,7 @@ const handleFindEpisodeById: RequestHandler = async (req, res, next) => {
 //   async deleteEpisodeById(id)
 const handleDeleteEpisodeById: RequestHandler = async (req, res, next) => {
     try {
-      const id = toNumber(strFromQueryOrParams(req.params.id));
+      const id: number | null = toNumber(req.params.id);
       
       if (!id) throw new CustomError('episode id Undefined! ', 400)
 

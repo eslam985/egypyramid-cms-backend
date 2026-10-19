@@ -7,12 +7,12 @@ import {BaseSeasonQueryType} from '#src/middleware/schemas/seasonSchema.js'
 import { SeasonResponse } from '#src/types/seasonType.js'
 
 
-import { strFromQueryOrParams, toNumber } from "#src/utils/paramAndQueryHelpes.js";
+import { toNumber } from "#src/utils/paramAndQueryHelpes.js";
 import { CustomError } from "#src/utils/customErr.js";
 
 const handleCreateSeason: RequestHandler = async (req, res, next) => {
     try {
-      const mediaId: number | null = toNumber(strFromQueryOrParams(req.params.media_id));
+      const mediaId: number | null = toNumber(req.params.media_id);
       
       if(!mediaId) throw new CustomError('media Id Undefined! ', 400)
 
@@ -37,7 +37,7 @@ const handleCreateSeason: RequestHandler = async (req, res, next) => {
 
 const handleUpdateSeason: RequestHandler = async (req, res, next) => {
     try {
-      const seasonId: number | null = toNumber(strFromQueryOrParams(req.params.season_id));
+      const seasonId: number | null = toNumber(req.params.season_id);
       
       if (!seasonId) throw new CustomError('season Id Undefined! ', 400)
 
@@ -64,10 +64,11 @@ const handleUpdateSeason: RequestHandler = async (req, res, next) => {
 // findSeasonById(id)
 const handleFindSeasonById: RequestHandler = async (req, res, next) => {
     try {
-        const seasonId: string | string[] | undefined = req.params.id;
-        const idNum: number = seasonId !== undefined && Array.isArray(seasonId) ? Number(seasonId[0]) : Number(seasonId);
+        const seasonId: number | null = toNumber(req.params.id);
 
-        const result = await Season.findSeasonById(idNum);
+        if (!seasonId) throw new CustomError('season Id Undefined!', 400)
+
+        const result: SeasonResponse | null = await Season.findSeasonById(seasonId);
 
         if (!result) {
           res.status(404).json( { success: false, message: "Season not found" } );
@@ -76,7 +77,7 @@ const handleFindSeasonById: RequestHandler = async (req, res, next) => {
 
         res.status(200).json({
             success: true,
-            message: `Season ID ${idNum} Found!`,
+            message: `Season ID ${seasonId} Found!`,
             data: result,
         });
     } catch (err) {
@@ -105,7 +106,7 @@ const handleFindSeasonsByMediaId: RequestHandler = async (req, res, next) => {
 //  deleteSeasonById(id)
 const handleDeleteSeasonById: RequestHandler = async (req, res, next) => {
     try {
-      const seasonId: number | null = toNumber(strFromQueryOrParams(req.params.season_id));
+      const seasonId: number | null = toNumber(req.params.season_id);
       
       if (!seasonId) throw new CustomError('season Id Undefined! ', 400)
 

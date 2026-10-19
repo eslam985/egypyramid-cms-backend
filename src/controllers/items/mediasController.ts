@@ -8,7 +8,7 @@ import { MediasResponse, MediaGenreResponse, FindMediaByAnyIdResponse} from '#sr
 import { CreateMediaType, BaseMediasQueryType } from '#src/middleware/schemas/mediaSchema.js'
 import { PaginationResponse } from '#src/types/globalTypes.js'
 
-import { strFromQueryOrParams, toNumber } from "#src/utils/paramAndQueryHelpes.js";
+import {  toNumber } from "#src/utils/paramAndQueryHelpes.js";
 import { CustomError } from "#src/utils/customErr.js";
 
 const handleCreateMedia: RequestHandler = async (req, res, next) => {
@@ -29,7 +29,7 @@ const handleCreateMedia: RequestHandler = async (req, res, next) => {
 
 const handleUpdateMedia: RequestHandler = async (req, res, next) => {
     try {
-      const id: number | null = toNumber(strFromQueryOrParams(req.params.id));
+      const id: number | null = toNumber(req.params.id);
       
       if (!id) throw new CustomError('Media id Undefined! ', 400)
 
@@ -85,7 +85,7 @@ const handleFindAllMedia: RequestHandler = async (req, res, next) => {
 
 const handleFindMediaById: RequestHandler = async (req, res, next) => {
     try {
-      const id: number | null = toNumber(strFromQueryOrParams(req.params.id));
+      const id: number | null = toNumber(req.params.id);
       
       if (!id) throw new CustomError('Media id Undefined! ', 400)
 
@@ -108,7 +108,7 @@ const handleFindMediaById: RequestHandler = async (req, res, next) => {
 
 const handleFindMediaByAnyId: RequestHandler = async (req, res, next) => {
     try {
-      const id: number | null = toNumber(strFromQueryOrParams(req.params.id));
+      const id: number | null = toNumber(req.params.id);
       
       if (!id) throw new CustomError('Media id Undefined! ', 400)
 
@@ -134,7 +134,7 @@ const handleFindMediaByAnyId: RequestHandler = async (req, res, next) => {
 // deleteMediaById(id)
 const handleDeleteMediaById: RequestHandler = async (req, res, next) => {
     try {
-      const id: number | null = toNumber(strFromQueryOrParams(req.params.id));
+      const id: number | null = toNumber(req.params.id);
       
       if (!id) throw new CustomError('Media id Undefined! ', 400)
 

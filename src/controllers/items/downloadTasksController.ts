@@ -7,7 +7,7 @@ import type { RequestHandler } from "express";
 import {  UpdateTaskByIdType , CreateTaskType} from '#src/middleware/schemas/downloadTaskSchema.js'
 import { DownloadTasksResponse, GetAllTasksRequest } from '#src/types/downloadTasksType.js'
 
-import { strFromQueryOrParams, toNumber } from "#src/utils/paramAndQueryHelpes.js";
+import { toNumber } from "#src/utils/paramAndQueryHelpes.js";
 import { CustomError } from "#src/utils/customErr.js";
 
 const handleCreateTask: RequestHandler = async (req, res, next) => {
@@ -28,7 +28,7 @@ const handleUpdateTaskById: RequestHandler = async (req, res, next) => {
     try {
         const data: UpdateTaskByIdType = req.body;
 
-        const id: number | null = toNumber(strFromQueryOrParams(req.params.id));
+        const id: number | null = toNumber(req.params.id);
 
         if (!id) throw new CustomError('Task id Undefined! ', 400)
 
@@ -78,7 +78,7 @@ const handleGetAllTasks: RequestHandler = async (req, res, next) => {
 
 const handleGetTaskById: RequestHandler = async (req, res, next) => {
     try {
-        const id: number | null = toNumber(strFromQueryOrParams(req.params.id));
+        const id: number | null = toNumber(req.params.id);
 
         if (!id) throw new CustomError('Task id Undefined! ', 400)
 
@@ -102,7 +102,7 @@ const handleGetTaskById: RequestHandler = async (req, res, next) => {
 
 const handleDeleteTaskById: RequestHandler = async (req, res, next) => {
   try {
-    const id: number | null = toNumber(strFromQueryOrParams(req.params.id));
+    const id: number | null = toNumber(req.params.id);
 
     if (!id) throw new CustomError('Task id Undefined! ', 400)
 

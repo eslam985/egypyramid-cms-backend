@@ -2,6 +2,20 @@ import jwt from "jsonwebtoken";
 
 export type RolesType = "2001" | "5150" | "1984";
 
+export interface SetAndUpdateAvatarUrlResponse {
+  id: string; // UUID
+  username: string;
+  avatar_url: string;
+  avatar_history: string[] | null;
+}
+
+export interface UserResponse extends SetAndUpdateAvatarUrlResponse {
+  email: string;
+  roles: RolesType;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface UserRequest {
   username: string;
   email: string;
@@ -9,23 +23,11 @@ export interface UserRequest {
   roles: RolesType;
 }
 
-export interface SetAndUpdateAvatarUrlResponse {
-  id: string; // UUID
-  username: string;
-  avatar_url: string;
-  avatar_history: string[] | null;
-}
 export interface DeleteAvatarUrlResponse {
   id: string; // UUID
   username: string;
   avatar_url: string;
   avatar_history: string[] | null;
-}
-export interface UserResponse extends SetAndUpdateAvatarUrlResponse {
-  email: string;
-  roles: RolesType;
-  created_at: string;
-  updated_at: string;
 }
 
 export interface FindUserByEmailResponse extends UserResponse {
@@ -65,6 +67,7 @@ export interface FindUserPasswordWithIdResponse {
   id: string;
   password: string;
 }
+
 export interface DecodedToken extends jwt.JwtPayload {
   userId: string;
   roles: RolesType;

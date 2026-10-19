@@ -33,7 +33,6 @@ export interface TotalStatusLinksResponse {
   total: number;
 }
 
-
 export interface ServerNameType extends PageAndLimitType {
   serverName: string;
 }

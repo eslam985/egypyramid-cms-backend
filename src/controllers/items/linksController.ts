@@ -6,14 +6,14 @@ import type { RequestHandler } from "express";
 import { CreateLinkType, UpdateLinkByIdType, BaseLinkQueryType } from '#src/middleware/schemas/linkSchema.js'
 import { LinksResponse } from '#src/types/linkType.js'
 
-import { strFromQueryOrParams, toNumber } from "#src/utils/paramAndQueryHelpes.js";
+import { toNumber } from "#src/utils/paramAndQueryHelpes.js";
 import { CustomError } from "#src/utils/customErr.js";
 
 
 
 const handleCreateLink: RequestHandler = async (req, res, next) => {
 	try {
-    const episode_id = toNumber(strFromQueryOrParams(req.params.episode_id));
+    const episode_id = toNumber(req.params.episode_id);
     
     if(!episode_id) throw new CustomError('episode id Undefined! ', 400)
 
@@ -38,7 +38,7 @@ const handleCreateLink: RequestHandler = async (req, res, next) => {
 
 const handleUpdateLinkById: RequestHandler = async (req, res, next) => {
 	try {
-    const id: number | null =toNumber(strFromQueryOrParams(req.params.id));
+    const id: number | null = toNumber(req.params.id);
     
     if (!id) throw new CustomError('Link id Undefined! ', 400)
 
@@ -63,11 +63,11 @@ const handleUpdateLinkById: RequestHandler = async (req, res, next) => {
 // findLinksByEpisodeId(episode_id){
 const handleFindLinkByEpisodeId: RequestHandler = async (req, res, next) => {
     try {
-      const idepisode_id = toNumber(strFromQueryOrParams(req.params.episode_id));
+      const episodeId = toNumber(req.params.episode_id);
       
-      if (!idepisode_id) throw new CustomError('episode id Undefined! ', 400)
+      if (!episodeId) throw new CustomError('episode id Undefined! ', 400)
 
-      const result: LinksResponse[] = await Link.findLinksByEpisodeId(idepisode_id);
+      const result: LinksResponse[] = await Link.findLinksByEpisodeId(episodeId);
 
       res.status(200).json({
           success: true,
@@ -81,7 +81,7 @@ const handleFindLinkByEpisodeId: RequestHandler = async (req, res, next) => {
 // deleteLinkById(id){
 const handleDeleteLinkById: RequestHandler = async (req, res, next) => {
 	try {
-    const id: number | null =toNumber(strFromQueryOrParams(req.params.id));
+    const id: number | null = toNumber(req.params.id);
 
     if (!id) throw new CustomError('Link id Undefined! ', 400)
 
@@ -103,7 +103,7 @@ const handleDeleteLinkById: RequestHandler = async (req, res, next) => {
 };
 const handleFindLinkById: RequestHandler = async (req, res, next) => {
 	try {
-    const id: number | null = toNumber(strFromQueryOrParams(req.params.id));
+    const id: number | null = toNumber(req.params.id);
 
     if (!id) throw new CustomError('Link id Undefined! ', 400)
 
