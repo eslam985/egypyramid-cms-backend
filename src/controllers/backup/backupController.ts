@@ -1,15 +1,17 @@
 import BackupService from "#src/service/backupService.js";
+import { CustomError } from "#src/utils/customErr.js";
+import ROLES_LIST from "#src/config/roles_list.js";
 
-const handleDownloadBackup = async (req, res, next) => {
+import type { RequestHandler } from "express";
+
+const handleDownloadBackup: RequestHandler = async (req, res, next) => {
   try {
-    const userId = req.userId;
-    if (!userId) {
-      return res.status(401).json({ success: false, message: "Unauthorized access" });
-    }
+    if (!req?.userId || Number(req?.roles) !== ROLES_LIST.Admin) throw new CustomError("غير مصرح لك بتحميل النسخة الاحتياطية", 403);
 
-    const date = new Date().toISOString().slice(0, 10);
+    const date: string = new Date().toISOString().slice(0, 10);
+
     // 💡 تغيير الامتداد إلى .dump ليناسب الصيغة المضغوطة الاحترافية لقواعد البيانات
-    const fileName = `backup-${date}.dump`;
+    const fileName: string = `backup-${date}.dump`;
 
     const pgDumpProcess = await BackupService.generateBackupStream();
 
@@ -36,26 +38,36 @@ const handleDownloadBackup = async (req, res, next) => {
     });
 
     pgDumpProcess.on("close", (code) => {
+
       if (code !== 0) {
         console.error(`pg_dump process exited with code ${code}`);
+
         if (!res.headersSent) {
-          return res.status(500).json({ 
+          res.status(500).json({ 
             success: false, 
             message: "فشل توليد النسخة الاحتياطية",
             error: errorMessage.trim() 
           });
+
+          return
         }
+
         res.end();
       } else {
         res.end();
       }
+
     });
 
     pgDumpProcess.on("error", (err) => {
+
       console.error("Failed to start pg_dump:", err);
+
       if (!res.headersSent) {
-        return res.status(500).json({ success: false, message: "pg_dump is not available" });
+        res.status(500).json({ success: false, message: "pg_dump is not available" });
+        return
       }
+
     });
 
   } catch (err) {

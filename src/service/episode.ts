@@ -6,6 +6,8 @@ import Media from "#src/service/media.js";
 import pool from "#src/config/dbConn.js";
 import { slugify } from '#src/utils/regex.js';
 
+import { PageAndLimitType } from '#src/types/globalTypes.js'
+
 // slug: 8359-when-calls-the-heart-episode-10
 const Episode = {
     async createEpisode(
@@ -79,7 +81,7 @@ const Episode = {
         return result.rows[0] || null;
     },
 
-    async findEpisodesByMediaId(media_id: number, page: number = 1, limit: number = 20): Promise<EpisodeResponse[]> {
+    async findEpisodesByMediaId(media_id: number, { page = 1, limit= 20 }: PageAndLimitType): Promise<EpisodeResponse[]> {
         const offset: number = (page - 1) * limit;
 
         const result = await pool.query(

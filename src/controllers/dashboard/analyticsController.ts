@@ -2,14 +2,26 @@
 import Analytics from "#src/service/analytics.js";
 import convertToCSV from "#src/utils/csv.js";
 
+import type { RequestHandler } from "express";
+
+import {
+  SystemCountersResponse,
+  TotalStatusLinksResponse,
+  StatusLinksRequest,
+} from "#src/types/analyticsType.js";
+import type {
+  GetMissingEpisodesByServerType,
+  GetBrokenLinksType,
+} from "#src/middleware/schemas/analyticsSchema.js";
+import type { PageAndLimitType } from "#src/types/globalTypes.js";
 
 // 1. general
 // getSystemCounters()
-const handleGetSystemCounters = async (req, res, next) => {
+const handleGetSystemCounters: RequestHandler = async (_req, res, next) => {
     try {
-        const result = await Analytics.getSystemCounters();
+        const result: SystemCountersResponse = await Analytics.getSystemCounters();
 
-        return res.status(200).json({
+        res.status(200).json({
             success: true,
             message: "System counters retrieved successfully",
             data: result || {}
@@ -20,13 +32,13 @@ const handleGetSystemCounters = async (req, res, next) => {
 };
 
 // 2. Links Analytics
-// getTotalBrokenAndValidAndPendingLinks(status)
-const handleGetTotalBrokenAndValidAndPendingLinks = async (req, res, next) => {
+const handleGetTotalBrokenAndValidAndPendingLinks: RequestHandler = async (req, res, next) => {
     try {
-        const { status } = req.query;
-        const result = await Analytics.getTotalBrokenAndValidAndPendingLinks(status);
+        const status: StatusLinksRequest = req.query.status as StatusLinksRequest ;
 
-        return res.status(200).json({
+        const result: TotalStatusLinksResponse[] = await Analytics.getTotalBrokenAndValidAndPendingLinks(status);
+
+        res.status(200).json({
             success: true,
             message: `Links count for status [${status}] retrieved successfully`,
             data: result
@@ -36,19 +48,20 @@ const handleGetTotalBrokenAndValidAndPendingLinks = async (req, res, next) => {
     }
 };
 
-// getLockedTelegramLinks({ page = 1, limit = 20 })
-const handleGetLockedTelegramLinks = async (req, res, next) => {
+const handleGetLockedTelegramLinks: RequestHandler = async (req, res, next) => {
     try {
-        const isExport = req.query.export === 'true';
+        const isExport: boolean = req.query.export === 'true';
+
         const result = await Analytics.getLockedTelegramLinks(req.query, isExport);
 
         if (isExport) {
             res.setHeader("Content-Disposition", 'attachment; filename="locked-telegram-links.csv"');
             res.setHeader("Content-Type", "text/csv");
-            return res.status(200).send(convertToCSV(result.data));
+            res.status(200).send(convertToCSV(result.data));
+            return
         }
 
-        return res.status(200).json({
+        res.status(200).json({
             success: true,
             message: `Found ${result.data.length} Locked By Server Name Telegram Direct`,
             ...result
@@ -58,20 +71,20 @@ const handleGetLockedTelegramLinks = async (req, res, next) => {
     }
 };
 
-// getBrokenLinks({ page = 1, limit = 20 })
-const handleGetBrokenLinks = async (req, res, next) => {
+const handleGetBrokenLinks: RequestHandler = async (req, res, next) => {
     try {
-        const isExport = req.query.export === 'true';
-        const result = await Analytics.getBrokenLinks(req.query, isExport);
+        const isExport: boolean = req.query.export === 'true';
+        const result = await Analytics.getBrokenLinks(req.query as unknown as GetBrokenLinksType["query"], isExport);
 
         if (isExport) {
             const server = req.query.serverName || 'server';
             res.setHeader("Content-Disposition", `attachment; filename="broken-links-${server}.csv"`);
             res.setHeader("Content-Type", "text/csv");
-            return res.status(200).send(convertToCSV(result.data));
+            res.status(200).send(convertToCSV(result.data));
+            return
         }
 
-        return res.status(200).json({
+        res.status(200).json({
             success: true,
             message: `Found ${result.data.length} Links Broken`,
             ...result
@@ -83,20 +96,20 @@ const handleGetBrokenLinks = async (req, res, next) => {
 
 
 // 3. episodes
-// getMissingEpisodesByServer({serverName, page = 1, limit = 20 })
-const handleGetMissingEpisodesByServer = async (req, res, next) => {
+const handleGetMissingEpisodesByServer: RequestHandler = async (req, res, next) => {
     try {
-        const isExport = req.query.export === 'true';
-        const result = await Analytics.getMissingEpisodesByServer(req.query, isExport);
+        const isExport: boolean = req.query.export === 'true';
+        const result = await Analytics.getMissingEpisodesByServer(req.query as unknown as GetMissingEpisodesByServerType["query"], isExport);
 
         if (isExport) {
             const server = req.query.serverName || 'server';
             res.setHeader("Content-Disposition", `attachment; filename="missing-episodes-${server}.csv"`);
             res.setHeader("Content-Type", "text/csv");
-            return res.status(200).send(convertToCSV(result.data));
+            res.status(200).send(convertToCSV(result.data));
+            return
         }
 
-        return res.status(200).json({
+        res.status(200).json({
             success: true,
             message: `Missing episodes for server [${req.query.serverName}] retrieved successfully`,
             ...result
@@ -109,19 +122,19 @@ const handleGetMissingEpisodesByServer = async (req, res, next) => {
 
 
 // 5. Medias Analytics
-// getNotReadyMedias({ page = 1, limit = 20 })
-const handleGetNotReadyMedias = async (req, res, next) => {
+const handleGetNotReadyMedias: RequestHandler = async (req, res, next) => {
     try {
-        const isExport = req.query.export === 'true';
-        const result = await Analytics.getNotReadyMedias(req.query, isExport);
+        const isExport: boolean = req.query.export === 'true';
+        const result = await Analytics.getNotReadyMedias(req.query as unknown as PageAndLimitType, isExport);
 
         if (isExport) {
             res.setHeader("Content-Disposition", 'attachment; filename="not-ready-medias.csv"');
             res.setHeader("Content-Type", "text/csv");
-            return res.status(200).send(convertToCSV(result.data));
+            res.status(200).send(convertToCSV(result.data));
+            return
         }
 
-        return res.status(200).json({
+        res.status(200).json({
             success: true,
             message: `Found ${result.data.length} Media Not Ready`,
             ...result

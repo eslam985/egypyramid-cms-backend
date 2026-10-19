@@ -3,22 +3,23 @@
  * @param data - The array of data to export.
  * @returns The CSV string ready for export.
  */
-const convertToCSV = (data: Record<string, unknown>[]): string => {
+const convertToCSV = <T extends object>(data: T[]): string => {
 
   if (!Array.isArray(data) || data.length === 0) {
     return '';
   }
 
   // 1. استخراج أسماء الأعمدة (Headers) تلقائياً من مفاتيح أول كائن
-  const headers: string[] = Object.keys(data[0]!);
+  const headers: string[] = Object.keys(data[0] as Record<string, unknown>);
 
   // 2. بناء السطر الأول (العناوين)
   const csvRows: string[] = [headers.join(',')];
 
   // 3. تحويل كل كائن إلى سطر مفصول بفواصل
   for (const row of data) {
+    const record = row as Record<string, unknown>;
     const values: string[] = headers.map(header => {
-      const rawValue = row[header];
+      const rawValue = record[header];
       let value: string;
 
       // إذا كانت القيمة فارغة أو غير معرفة

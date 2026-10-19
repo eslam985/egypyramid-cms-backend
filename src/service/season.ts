@@ -21,7 +21,7 @@ const Season = {
 
         return result.rows[0] || null;
     },
-    async findSeasonsByMediaId(media_id: number): Promise<SeasonResponse[] | null> {
+    async findSeasonsByMediaId(media_id: number): Promise<SeasonResponse[]> {
 
         const result = await pool.query(
             `SELECT 

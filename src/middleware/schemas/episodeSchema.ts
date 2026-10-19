@@ -53,8 +53,8 @@ const findEpisodesByMediaIdSchema = z.object({
 });
 
 const baseEpisodeQuerySchema = z.object({
-  page: z.coerce.number().int().positive().default(1),
-  limit: z.coerce.number().int().max(100).default(10),
+  page: z.coerce.number().int().positive().default(1).optional(),
+  limit: z.coerce.number().int().max(100).default(20).optional(),
   sortOrder: z.enum(["ASC", "DESC"]).optional(),
   sortBy: z
     .enum([
@@ -75,7 +75,7 @@ export {
   baseEpisodeQuerySchema
 };
 
-export type GindEpisodesByMediaIdType = z.infer<typeof findEpisodesByMediaIdSchema>;
+export type FindEpisodesByMediaIdType = z.infer<typeof findEpisodesByMediaIdSchema>;
 export type CreateEpisodeType = z.infer<typeof baseEpisodeSchema>;
 export type UpdateEpisodeType = z.infer<typeof baseEpisodeSchema>;
 export type BaseEpisodeQueryType = z.infer<typeof baseEpisodeQuerySchema>;

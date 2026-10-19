@@ -63,6 +63,6 @@ export {
 };
 
 export type FindByTaskNameType = z.infer<typeof findByTaskNameSchema>;
-export type UpdateTaskByIdType = z.infer<typeof UpdateTaskByIdSchema>;
+export type UpdateTaskByIdType = z.infer<typeof baseTaskSchema>;
 export type GetAllTasksType = z.infer<typeof getAllTasksSchema>;
-export type CreateTaskType = z.infer<typeof createTaskSchema>;
+export type CreateTaskType = z.infer<typeof baseTaskSchema>;

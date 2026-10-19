@@ -1,7 +1,7 @@
 // /projects/project_Full-stack/egyPyramidDashbord/backend/service/media.js
 
 
-import {PaginationResponse} from '#src/types/globalTypes.js'
+import { PaginationResponse } from '#src/types/globalTypes.js'
 import { CustomError } from "#src/utils/customErr.js";
 import { slugify } from "#src/utils/regex.js"
 import pool from "#src/config/dbConn.js";
