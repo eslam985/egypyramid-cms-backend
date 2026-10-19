@@ -1,13 +1,14 @@
 {
   "name": "egyPyramidDashbord",
   "version": "1.0.0",
-  "main": "src/server.js",
+  "main": "dist/server.js",
   "type": "module",
   "imports": {
     "#src/*": "./src/*"
   },
   "scripts": {
-    "start": "tsx src/server.js",
+    "build": "tsc",
+    "start": "node dist/server.js",
     "dev": "tsx --watch src/server.js"
   },
   "dependencies": {
