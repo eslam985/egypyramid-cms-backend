@@ -15,7 +15,6 @@ import episodesRouter from "#src/routes/api/data/episodes.js";
 import registerRouter from "#src/routes/api/auth/register.js";
 import refreshRouter from "#src/routes/api/auth/refresh.js";
 import seasonsRouter from "#src/routes/api/data/seasons.js";
-import allowedOrigins from "#src/config/allowedOrigins.js";
 import errorHandler from "#src/middleware/errorHandler.js";
 import logoutRouter from "#src/routes/api/auth/logout.js";
 import backupRouter from "#src/routes/api/data/backup.js";
@@ -37,8 +36,9 @@ import {
   burstLimiter,
   healthLimiter,
 } from "#src/config/rateLimiter.js";
+import { toNumber } from "./utils/paramAndQueryHelpes.js";
 
-const PORT = process.env.PORT || 3000;
+const PORT: number = toNumber(process.env.PORT) || 3000;
 
 // custom middleware logger
 app.use(logger);
