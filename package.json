@@ -4,7 +4,7 @@
   "main": "dist/server.js",
   "type": "module",
   "imports": {
-    "#src/*": "./src/*"
+    "#src/*": "./dist/*"
   },
   "scripts": {
     "build": "tsc",
