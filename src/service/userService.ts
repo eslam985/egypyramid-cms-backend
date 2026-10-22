@@ -165,7 +165,13 @@ const User = {
 
     return result.rows[0] || null;
   },
-
+async hasActiveSessions(userId: string): Promise<boolean> {
+    const result = await pool.query(
+        `SELECT 1 FROM sessions WHERE user_id = $1 AND expires_at > NOW() LIMIT 1`,
+        [userId]
+    );
+    return result.rows.length > 0;
+},
   async refreshSession(token: string): Promise<number | null> {
 
     const newExpiresAt: Date = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // تمديد 7 أيام جديدة

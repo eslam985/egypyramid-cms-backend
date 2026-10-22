@@ -55,7 +55,7 @@ const handleRefreshToken: RequestHandler = async (req, res, next) => {
             return 
         }
 
-        // <<--- تمديد وتحديث الجلسة في قاعدة البيانات هنا --->>
+        // <<--- تمديد وتحديث الجلسة في قاعدة البيانات  --->>
         await User.refreshSession(refreshToken);
 
         // إنشاء Access Token جديد
