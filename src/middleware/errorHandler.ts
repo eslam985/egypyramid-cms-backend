@@ -8,6 +8,17 @@ const errorHandler: ErrorRequestHandler = (err, _req, res, _next) => {
   logEvents(`${err.name}: ${err.message}`, "errLog.txt");
   console.error(err.stack);
 
+  if (
+    err.stack.includes("Connection terminated due to connection timeout") ||
+    err.stack.includes("getaddrinfo ENOTFOUND")
+  ) {
+    return res.status(500).json({
+      success: false,
+      message:
+        "حدثت مشكلة اثناء الاتصال بقاعدة البيانات, جرب اعادة تحميل الصفحة وتحقق من اتصالك بالانترنت",
+    });
+  }
+
   // التقط خطأ الحجم الخاص بـ Multer صراحة وحوله لـ 413 (Payload Too Large)
   if (err.code === "LIMIT_FILE_SIZE") {
     return res.status(413).json({
@@ -37,7 +48,7 @@ const errorHandler: ErrorRequestHandler = (err, _req, res, _next) => {
     });
   }
 
-  // 3. أخطاء التطبيق المخصصة القادمة من الكلاس الخاص بنا
+  // 3. أخطاء التطبيق المخصصة القادمة من الكلاس الخاص CustomError
   if (err instanceof CustomError) {
     return res.status(err.statusCode).json({
       success: false,
