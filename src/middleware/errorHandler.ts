@@ -18,11 +18,11 @@ const errorHandler: ErrorRequestHandler = (err, _req, res, _next) => {
         "حدثت مشكلة اثناء الاتصال بقاعدة البيانات, جرب اعادة تحميل الصفحة وتحقق من اتصالك بالانترنت",
     });
   }
-  // Failed to start backup process: spawn pg_dump ENOENT
+
   if (err.stack.includes("Failed to start backup process: spawn pg_dump ENOENT")) {
     return res.status(500).json({
       success: false,
-      message:'فشل بدء عملية النسخ الاحتياطي',
+      message:"The pg_dump tool is not installed or available in the current operating environment (e.g., Vercel). This feature requires a real server (VPS).",
     });
   }
   // التقط خطأ الحجم الخاص بـ Multer صراحة وحوله لـ 413 (Payload Too Large)

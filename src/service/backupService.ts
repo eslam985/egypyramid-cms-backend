@@ -15,7 +15,7 @@ const BackupService = {
       execSync("pg_dump --version", { stdio: "ignore" });
     } catch {
       throw new CustomError(
-        "أداة pg_dump غير مثبتة أو غير متاحة في بيئة التشغيل الحالية (مثل Vercel). هذه الميزة تتطلب سيرفر حقيقي (VPS).",
+        "The pg_dump tool is not installed or available in the current operating environment (e.g., Vercel). This feature requires a real server (VPS).",
         500
       );
     }
